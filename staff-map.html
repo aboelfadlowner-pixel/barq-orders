@@ -95,6 +95,11 @@
   .hour-cell input { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 4px 2px; text-align: center; font-family: 'Cairo',sans-serif; font-size: 11px; }
   .rotation-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 6px; }
   .rotation-row input { width: 50px; border: 1.5px solid var(--border); border-radius: 6px; padding: 4px; text-align: center; }
+  .codes-box { margin-top: 10px; border-top: 1.5px dashed var(--border); padding-top: 10px; }
+  .codes-title { font-size: 11px; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
+  .code-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }
+  .code-name { font-size: 12px; font-weight: 700; }
+  .code-input { width: 120px; border: 1.5px solid var(--border); border-radius: 6px; padding: 5px 8px; font-family: 'Cairo',sans-serif; font-size: 11px; text-align: center; }
   .save-bar { position: sticky; bottom: 0; background: #fff; padding: 12px 18px; border-top: 1.5px solid var(--border); }
   .save-btn { width: 100%; background: linear-gradient(135deg,var(--accent),var(--primary)); color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: 'Cairo',sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
 </style>
@@ -163,7 +168,7 @@
 
 const SHIFTS = { 'صباحي': [6,14], 'بتوين': [14,22], 'ليلي': [22,30] }; // 30 = 06:00 next day
 
-function emp(name, role, shift) { return { name, role, shift }; }
+function emp(name, role, shift, code) { return { name, role, shift, code: code || '' }; }
 
 const DEPARTMENTS_SEED = [
   {
@@ -248,22 +253,46 @@ const DEPARTMENTS_SEED = [
   },
 ];
 
-/* حمّل الإعدادات المحفوظة (مان باور مخصص) من localStorage لو موجودة */
+/* حمّل الإعدادات المحفوظة (مان باور + أكواد البصمة) من localStorage لو موجودة */
 function loadSettings() {
   try {
     const saved = JSON.parse(localStorage.getItem('staffmap_settings') || 'null');
     if (!saved) return DEPARTMENTS_SEED;
-    return DEPARTMENTS_SEED.map(d => ({ ...d, requiredPerHour: saved[d.id]?.requiredPerHour || d.requiredPerHour, breakRotation: saved[d.id]?.breakRotation ?? d.breakRotation }));
+    return DEPARTMENTS_SEED.map(d => ({
+      ...d,
+      requiredPerHour: saved[d.id]?.requiredPerHour || d.requiredPerHour,
+      breakRotation: saved[d.id]?.breakRotation ?? d.breakRotation,
+      employees: d.employees.map(e => ({ ...e, code: saved[d.id]?.codes?.[e.name] ?? e.code }))
+    }));
   } catch(e) { return DEPARTMENTS_SEED; }
 }
 let DEPARTMENTS = loadSettings();
 
 /* =========================================================
    نقطة الربط بالبصمة الحقيقية لاحقاً:
-   استبدل جسم الدالة دي بنداء API/DB فعلي بيرجع نفس الشكل:
-   { employeeName: 'present' | 'break' | 'off' }
-   وقتها كل الواجهة هتشتغل ببيانات حقيقية زي ما هي.
+   جهاز البصمة هيرجّع بيانات بـ"كود الموظف" مش بالاسم، فلازم
+   نعمل مابّة كود -> اسم أول. الأكواد بتتسجل من شاشة الإعدادات
+   (⚙️ إعداد المان باور) بجانب كل موظف.
+
+   الخطوات وقت الربط الفعلي:
+   1) نادِ الـ API/الداتابيز وارجع فيد بشكل:
+        { "<كود الموظف>": "in" | "out" | "break" }
+   2) مرّره على mapAttendanceByCode(dept, feed) عشان تترجم
+      الأكواد لأسماء وتدّيك نفس شكل statuses الحالي.
+   3) استبدل جسم getLiveAttendance بالنداء ده بدل المحاكاة.
+   الواجهة والتنبيهات مش هتحتاج أي تعديل تاني.
 ========================================================= */
+function mapAttendanceByCode(dept, feed) {
+  // feed: { code: 'in' | 'out' | 'break' } كما هيوصل من جهاز/سيرفر البصمة
+  const statuses = {};
+  dept.employees.forEach(e => {
+    if (!e.code) { statuses[e.name] = 'off'; return; } // لسه محدّدلوش كود
+    const raw = feed[e.code];
+    statuses[e.name] = raw === 'in' ? 'present' : raw === 'break' ? 'break' : 'off';
+  });
+  return statuses;
+}
+
 function getLiveAttendance(dept, minutesSinceMidnight) {
   const hour = Math.floor(minutesSinceMidnight / 60) % 24;
   const scheduled = dept.employees.filter(e => onShiftNow(e.shift, minutesSinceMidnight));
@@ -433,6 +462,14 @@ function openSettings() {
         عدد الموظفين اللي بيطلعوا بريك في نفس الوقت:
         <input type="number" min="0" class="rotation-input" value="${d.breakRotation}">
       </div>
+      <div class="codes-box">
+        <div class="codes-title">🔑 كود البصمة لكل موظف (هتجيلك مع فيد الداتا سنتر)</div>
+        ${d.employees.map(e => `
+          <div class="code-row">
+            <span class="code-name">${e.name}</span>
+            <input type="text" class="code-input" data-emp="${e.name}" placeholder="كود البصمة" value="${e.code || ''}">
+          </div>`).join('')}
+      </div>
     </div>
   `).join('');
   document.getElementById('settingsModal').classList.add('show');
@@ -446,7 +483,9 @@ function saveSettings() {
     const requiredPerHour = {};
     el.querySelectorAll('[data-hour]').forEach(inp => { requiredPerHour[inp.dataset.hour] = parseInt(inp.value,10) || 0; });
     const breakRotation = parseInt(el.querySelector('.rotation-input').value,10) || 0;
-    settings[id] = { requiredPerHour, breakRotation };
+    const codes = {};
+    el.querySelectorAll('.code-input').forEach(inp => { codes[inp.dataset.emp] = inp.value.trim(); });
+    settings[id] = { requiredPerHour, breakRotation, codes };
   });
   localStorage.setItem('staffmap_settings', JSON.stringify(settings));
   DEPARTMENTS = loadSettings();
