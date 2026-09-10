@@ -128,6 +128,21 @@
   .override-btn.active { border-color: var(--red); background: #fdf0ef; color: var(--red); }
   .override-reset { width: 100%; margin-top: 8px; border: none; background: none; color: var(--muted); font-family: 'Cairo',sans-serif; font-size: 11px; padding: 8px; cursor: pointer; text-decoration: underline; }
 
+  /* ===== مودال كل الموظفين + إضافة موظف ===== */
+  .roster-modal { max-width: 900px; }
+  .add-emp-form { border: 1.5px dashed var(--accent); border-radius: 14px; padding: 14px; margin-bottom: 18px; background: #f4fbf6; }
+  .add-emp-form h4 { font-size: 13.5px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+  .add-emp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 8px; margin-bottom: 10px; }
+  .add-emp-grid input, .add-emp-grid select { border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 10px; font-family: 'Cairo',sans-serif; font-size: 12.5px; color: var(--text); background: #fff; }
+  .add-emp-btn { background: linear-gradient(135deg,var(--accent),var(--primary2)); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-family: 'Cairo',sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; }
+  .roster-branch-title { font-size: 15px; font-weight: 900; color: var(--primary); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+  .roster-branch-title:first-child { margin-top: 0; }
+  .roster-dept-title { font-size: 12.5px; font-weight: 800; color: var(--muted); margin: 12px 0 6px; }
+  .roster-shift-group { margin-bottom: 8px; }
+  .roster-shift-label { font-size: 10.5px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
+  .roster-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+  .manual-tag { font-size: 8px; font-weight: 900; color: var(--purple); }
+
   /* ===== مودال إعداد المان باور ===== */
   .settings-modal { max-width: 720px; }
   .dept-setting { border: 1.5px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
@@ -176,6 +191,7 @@
     </div>
     <select class="branch-select" id="branchSelect"></select>
     <span class="clock" id="clockDisplay">--:--</span>
+    <button class="top-btn" onclick="openRoster()">👥 كل الموظفين</button>
     <button class="top-btn" onclick="openSettings()">⚙️ إعداد المان باور</button>
     <button class="top-btn solid" onclick="printReport()">🖨️ طباعة / PDF</button>
     <button class="top-btn" id="syncBtn" onclick="syncNow()">🔄 مزامنة</button>
@@ -233,6 +249,37 @@
   </div>
 </div>
 
+<div class="modal-overlay no-print" id="rosterModal">
+  <div class="modal roster-modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">👥 كل الموظفين</div>
+        <div class="modal-sub">كل الفروع والأقسام والشيفتات — ضيف أي موظف موجود فعليًا بس البصمة مسجلاه غياب</div>
+      </div>
+      <button class="modal-close" onclick="closeRoster()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="add-emp-form">
+        <h4>➕ إضافة موظف موجود مش متسجل بالبصمة</h4>
+        <div class="add-emp-grid">
+          <input type="text" id="addEmpName" placeholder="اسم الموظف">
+          <input type="text" id="addEmpRole" placeholder="الوظيفة">
+          <select id="addEmpBranch"></select>
+          <input type="text" id="addEmpDept" placeholder="القسم" list="deptListDatalist">
+          <datalist id="deptListDatalist"></datalist>
+          <select id="addEmpShift">
+            <option value="صباحي">🌅 صباحي</option>
+            <option value="بتوين">🌆 بتوين</option>
+            <option value="ليلي">🌙 ليلي</option>
+          </select>
+        </div>
+        <button class="add-emp-btn" onclick="addManualEmployee()">✔️ إضافة وتحضير الموظف</button>
+      </div>
+      <div id="rosterList"></div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay no-print" id="settingsModal">
   <div class="modal settings-modal">
     <div class="modal-head">
@@ -265,6 +312,7 @@ const SHIFT_WINDOWS = { 'صباحي': [6,14], 'بتوين': [14,22], 'ليلي':
 
 let lastSyncTime = new Date();
 let currentBranch = Object.keys(BRANCH_DATA)[0];
+
 
 function onShiftNow(shift, minutesSinceMidnight) {
   const range = SHIFT_WINDOWS[shift] || SHIFT_WINDOWS['صباحي'];
@@ -417,6 +465,100 @@ function getVacancies(branch) {
 }
 
 /* =========================================================
+   موظفين مضافين يدويًا: لموظف موجود فعليًا بالفرع بس البصمة
+   مش متفعلة له فبتحسبه غياب غلط. بيتحفظوا في localStorage
+   وبيندمجوا جوا BRANCH_DATA عادي زي أي موظف تاني (atte=حضور).
+========================================================= */
+function getManualEmployees() {
+  try { return JSON.parse(localStorage.getItem('staffmap_manual_employees') || '[]'); }
+  catch(e) { return []; }
+}
+function saveManualEmployees(list) { localStorage.setItem('staffmap_manual_employees', JSON.stringify(list)); }
+function mergeManualEmployees() {
+  getManualEmployees().forEach(m => {
+    BRANCH_DATA[m.branch] = BRANCH_DATA[m.branch] || {};
+    BRANCH_DATA[m.branch][m.dept] = BRANCH_DATA[m.branch][m.dept] || { active: [], left: [] };
+    const already = BRANCH_DATA[m.branch][m.dept].active.some(e => e.code === m.code);
+    if (!already) BRANCH_DATA[m.branch][m.dept].active.push({ name: m.name, role: m.role, shift: m.shift, code: m.code, atte: 'حضور', manual: true });
+  });
+}
+function addManualEmployee() {
+  const name = document.getElementById('addEmpName').value.trim();
+  const role = document.getElementById('addEmpRole').value.trim() || '-';
+  const branch = document.getElementById('addEmpBranch').value;
+  const dept = document.getElementById('addEmpDept').value.trim();
+  const shift = document.getElementById('addEmpShift').value;
+  if (!name || !dept) { alert('لازم تكتب اسم الموظف والقسم على الأقل'); return; }
+  const code = 'M' + Date.now().toString().slice(-8);
+  const list = getManualEmployees();
+  list.push({ name, role, branch, dept, shift, code });
+  saveManualEmployees(list);
+  BRANCH_DATA[branch] = BRANCH_DATA[branch] || {};
+  BRANCH_DATA[branch][dept] = BRANCH_DATA[branch][dept] || { active: [], left: [] };
+  BRANCH_DATA[branch][dept].active.push({ name, role, shift, code, atte: 'حضور', manual: true });
+  document.getElementById('addEmpName').value = '';
+  document.getElementById('addEmpRole').value = '';
+  document.getElementById('addEmpDept').value = '';
+  renderRosterList();
+  render();
+}
+function removeManualEmployee(code) {
+  saveManualEmployees(getManualEmployees().filter(m => m.code !== code));
+  Object.keys(BRANCH_DATA).forEach(b => Object.keys(BRANCH_DATA[b]).forEach(d => {
+    BRANCH_DATA[b][d].active = BRANCH_DATA[b][d].active.filter(e => e.code !== code);
+  }));
+  renderRosterList();
+  render();
+}
+
+/* =========================================================
+   مودال "كل الموظفين": كل الفروع/الأقسام/الشيفتات في صفحة واحدة
+========================================================= */
+function openRoster() {
+  const branchSel = document.getElementById('addEmpBranch');
+  branchSel.innerHTML = Object.keys(BRANCH_DATA).map(b => `<option value="${b}" ${b===currentBranch?'selected':''}>${b}</option>`).join('');
+  const allDepts = new Set();
+  Object.values(BRANCH_DATA).forEach(depts => Object.keys(depts).forEach(d => allDepts.add(d)));
+  document.getElementById('deptListDatalist').innerHTML = [...allDepts].map(d => `<option value="${d}">`).join('');
+  renderRosterList();
+  document.getElementById('rosterModal').classList.add('show');
+}
+function closeRoster() { document.getElementById('rosterModal').classList.remove('show'); }
+function renderRosterList() {
+  const now = new Date();
+  const minutesNow = now.getHours()*60 + now.getMinutes();
+  const el = document.getElementById('rosterList');
+  el.innerHTML = Object.keys(BRANCH_DATA).map(branch => {
+    const depts = BRANCH_DATA[branch];
+    const deptsHtml = Object.keys(depts).map(deptName => {
+      const active = depts[deptName].active;
+      if (active.length === 0) return '';
+      const byShift = SHIFT_ORDER.map(s => {
+        const emps = active.filter(e => e.shift === s);
+        if (emps.length === 0) return '';
+        const chips = emps.map(e => {
+          const status = computeStatus(e, minutesNow);
+          const bad = isBadStatus(status);
+          const cls = status === 'منضبط' ? 'present' : (bad ? 'absent-onshift' : 'off');
+          return `<div class="chip ${bad?'anomaly':''}" onclick="openEmpModal('${e.code}','${deptName.replace(/'/g,"\\'")}','${branch.replace(/'/g,"\\'")}')">
+              <div class="avatar-wrap"><div class="avatar ${cls}">${initials(e.name)}</div></div>
+              <div class="chip-info">
+                <div class="chip-name">${e.name} ${e.manual?'<span class="manual-tag">🖐️ يدوي</span>':''}</div>
+                <div class="chip-role">${e.role} · #${e.code}</div>
+              </div>
+              <span class="chip-status ${cls}">${status}</span>
+              ${e.manual ? `<span style="cursor:pointer;color:var(--red);font-weight:900;font-size:14px;margin-right:4px;" onclick="event.stopPropagation(); if(confirm('حذف ${e.name} من القائمة؟')) removeManualEmployee('${e.code}')">✕</span>` : ''}
+            </div>`;
+        }).join('');
+        return `<div class="roster-shift-group"><div class="roster-shift-label">${SHIFT_LABEL[s]}</div><div class="roster-chips">${chips}</div></div>`;
+      }).join('');
+      return `<div class="roster-dept-title">${emojiFor('', deptName)} ${deptName} (${active.length})</div>${byShift}`;
+    }).join('');
+    return `<div class="roster-branch-title">🏬 ${branch}</div>${deptsHtml}`;
+  }).join('');
+}
+
+/* =========================================================
    مزامنة حية من شيت جوجل (يحتاج مشاركة الرابط - Viewer)
 ========================================================= */
 async function syncNow() {
@@ -489,6 +631,7 @@ Object.keys(BRANCH_DATA).forEach(b => {
 });
 branchSelect.value = currentBranch;
 branchSelect.addEventListener('change', () => { currentBranch = branchSelect.value; render(); });
+mergeManualEmployees();
 
 const initials = n => n.trim().split(' ').slice(0,2).map(w=>w[0]).join('');
 
