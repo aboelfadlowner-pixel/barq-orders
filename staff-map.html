@@ -8,133 +8,163 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #1a3a2a; --accent: #2d8653; --accent2: #f0a500;
-    --bg: #f4f6f4; --card: #fff; --text: #1a2e1a; --muted: #6b8f71;
-    --border: #d4e4d8; --red: #c0392b; --orange: #e08c00; --gray: #9aa8a0;
-    --shadow: 0 2px 16px rgba(30,70,40,0.10); --radius: 14px;
+    --primary: #123524; --primary2: #1d5236; --accent: #2d8653; --accent2: #f0a500;
+    --bg: #eef3ee; --card: #fff; --text: #14261c; --muted: #6b8a76;
+    --border: #dbe6de; --red: #c0392b; --orange: #e08c00; --purple: #7b4fa0; --gray: #9aa8a0;
+    --shadow: 0 4px 20px rgba(18,53,36,.10); --shadow-lg: 0 12px 32px rgba(18,53,36,.16); --radius: 16px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Cairo', Tahoma, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
 
-  .top-bar { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; padding: 14px 18px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.2); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
-  .top-bar h1 { font-size: 17px; font-weight: 900; }
-  .top-bar .sub { font-size: 11px; opacity: .85; margin-top: 2px; }
-  .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .branch-select { background: rgba(255,255,255,.15); border: none; color: #fff; border-radius: 10px; padding: 8px 12px; font-family: 'Cairo',sans-serif; font-size: 13px; font-weight: 700; }
+  .top-bar { background: linear-gradient(120deg, var(--primary) 0%, var(--primary2) 55%, var(--accent) 130%); color: #fff; padding: 16px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,.25); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .top-bar h1 { font-size: 18px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+  .top-bar .sub { font-size: 11px; opacity: .8; margin-top: 3px; }
+  .top-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .view-toggle { display: flex; gap: 3px; background: rgba(255,255,255,.14); border-radius: 11px; padding: 3px; }
+  .view-toggle button { border: none; background: transparent; color: #fff; padding: 7px 13px; border-radius: 8px; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; opacity: .78; transition: .15s; }
+  .view-toggle button.active { background: #fff; color: var(--primary); opacity: 1; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+  .branch-select { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2); color: #fff; border-radius: 11px; padding: 9px 13px; font-family: 'Cairo',sans-serif; font-size: 12.5px; font-weight: 700; }
   .branch-select option { color: #000; }
-  .clock { background: rgba(255,255,255,.15); border-radius: 10px; padding: 7px 14px; font-weight: 800; font-size: 15px; letter-spacing: .5px; }
-  .top-btn { background: rgba(255,255,255,.15); border: none; color: #fff; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; }
-  .top-btn:hover { background: rgba(255,255,255,.28); }
+  .clock { background: rgba(255,255,255,.14); border-radius: 11px; padding: 8px 15px; font-weight: 900; font-size: 15px; letter-spacing: .5px; }
+  .top-btn { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2); color: #fff; border-radius: 11px; padding: 9px 14px; cursor: pointer; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; transition: .15s; }
+  .top-btn:hover { background: rgba(255,255,255,.26); }
   .top-btn:disabled { opacity: .6; cursor: default; }
+  .top-btn.solid { background: var(--accent2); color: var(--primary); border-color: transparent; font-weight: 800; }
+  .top-btn.solid:hover { filter: brightness(1.08); }
 
-  .banner { font-size: 12px; padding: 8px 18px; text-align: center; font-weight: 700; }
-  .banner.ok { background: #e8f5ee; border-bottom: 1.5px solid #b8dfc8; color: #1e6b40; }
-  .banner.warn { background: #fff8e7; border-bottom: 1.5px solid #f0c040; color: #7a5a00; }
+  .banner { font-size: 12px; padding: 9px 18px; text-align: center; font-weight: 700; }
+  .banner.ok { background: #e2f5e9; border-bottom: 1.5px solid #b8dfc8; color: #1e6b40; }
+  .banner.warn { background: #fff6e0; border-bottom: 1.5px solid #f0c040; color: #7a5a00; }
 
-  .wrap { max-width: 1400px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
-  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+  .shift-tabs { max-width: 1440px; margin: 0 auto; padding: 14px 20px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .shift-tab { background: var(--card); border: 1.5px solid var(--border); border-radius: 13px; padding: 10px 18px; font-family: 'Cairo',sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; color: var(--text); box-shadow: var(--shadow); transition: .15s; }
+  .shift-tab:hover { transform: translateY(-1px); }
+  .shift-tab.active { border-color: var(--accent); background: linear-gradient(135deg,#e2f5e9,#f4fbf6); color: var(--accent); box-shadow: var(--shadow-lg); }
+  .shift-tab .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); margin-left: 5px; animation: pulse-dot 1.2s infinite; }
+  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
 
-  .summary { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 4px; }
-  .stat { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: var(--shadow); }
-  .stat .n { font-size: 26px; font-weight: 900; color: var(--primary); }
-  .stat .l { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 16px 20px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 18px; }
+  @media (max-width: 920px) { .wrap { grid-template-columns: 1fr; } }
+
+  .summary { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; margin-bottom: 2px; }
+  .stat { background: var(--card); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .stat .n { font-size: 28px; font-weight: 900; color: var(--primary); line-height: 1; }
+  .stat .l { font-size: 11px; color: var(--muted); font-weight: 800; margin-top: 6px; }
   .stat.warn .n { color: var(--red); }
+  .stat.purple .n { color: var(--purple); }
 
-  .floor { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 14px; align-content: start; }
-  .dept-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 2px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
-  .dept-card.shortage { border-color: var(--red); }
-  .dept-head { padding: 12px 14px; background: linear-gradient(135deg,#eef7f1,#fff); display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid var(--border); gap: 8px; }
-  .dept-name { font-size: 14px; font-weight: 900; color: var(--primary); }
+  .floor { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; align-content: start; }
+  .dept-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1.5px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: .15s; }
+  .dept-card.shortage { border-color: var(--red); box-shadow: 0 4px 20px rgba(192,57,43,.15); }
+  .dept-head { padding: 14px 16px; background: linear-gradient(135deg,#f0f8f2,#fff); display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid var(--border); gap: 8px; }
+  .dept-name { font-size: 14.5px; font-weight: 900; color: var(--primary); display:flex; align-items:center; gap:6px; }
   .dept-count { font-size: 12px; font-weight: 800; white-space: nowrap; }
-  .dept-count .present { color: var(--accent); }
+  .dept-count .present { color: var(--accent); font-size: 15px; }
   .dept-count .req { color: var(--muted); }
   .dept-count.short .present { color: var(--red); }
-  .req-edit { width: 40px; border: 1.5px solid var(--border); border-radius: 6px; padding: 2px 4px; text-align: center; font-family: 'Cairo',sans-serif; font-size: 11px; margin-right: 4px; }
-  .positions { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { display: flex; align-items: center; gap: 7px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 10px 5px 5px; }
-  .chip.anomaly { border-color: var(--red); background: #fef0ef; }
-  .chip { cursor: pointer; position: relative; transition: transform .12s; }
-  .chip:hover { transform: translateY(-1px); }
+  .positions { padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 9px; }
+  .chip { display: flex; align-items: center; gap: 7px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 22px; padding: 6px 11px 6px 6px; cursor: pointer; position: relative; transition: .12s; }
+  .chip:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .chip.anomaly { border-color: var(--red); background: #fdf0ef; }
   .avatar-wrap { position: relative; flex-shrink: 0; }
-  .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
-  .avatar.present { background: var(--accent); box-shadow: 0 0 0 2px #b8e6c8; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
+  .avatar.present { background: linear-gradient(135deg,var(--accent),#1e6b40); box-shadow: 0 0 0 2px #b8e6c8; }
   .avatar.absent-onshift { background: var(--red); box-shadow: 0 0 0 2px #f5c6c0; }
   .avatar.off { background: var(--gray); }
   .avatar.faded { opacity: .4; filter: grayscale(60%); }
-  .badge-pill { position: absolute; top: -8px; left: -10px; background: var(--red); color: #fff; font-size: 7.5px; font-weight: 900; padding: 1.5px 4px; border-radius: 6px; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .badge-pill { position: absolute; top: -9px; left: -11px; background: var(--red); color: #fff; font-size: 7.5px; font-weight: 900; padding: 2px 5px; border-radius: 6px; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
   .badge-pill.leave { background: var(--orange); }
   .chip-info { line-height: 1.25; }
   .chip-name { font-size: 11.5px; font-weight: 800; }
   .chip-role { font-size: 9.5px; color: var(--muted); font-weight: 700; }
-  .chip-status { font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 8px; margin-right: 2px; }
-  .chip-status.present { background: #e8f5ee; color: var(--accent); }
-  .chip-status.absent-onshift { background: #fef0ef; color: var(--red); }
-  .chip-status.off { background: #eee; color: var(--gray); }
+  .chip-status { font-size: 9px; font-weight: 800; padding: 1.5px 7px; border-radius: 8px; margin-right: 2px; }
+  .chip-status.present { background: #e2f5e9; color: var(--accent); }
+  .chip-status.absent-onshift { background: #fdf0ef; color: var(--red); }
+  .chip-status.off, .chip-status.not-logged { background: #ececec; color: var(--muted); }
 
-  .alerts-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1.5px solid var(--border); padding: 14px; align-self: start; position: sticky; top: 90px; max-height: 80vh; overflow-y: auto; }
-  .alerts-panel h3 { font-size: 14px; font-weight: 900; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-  .alert-item { background: #fef0ef; border: 1.5px solid #f8cdc9; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; }
+  .alerts-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1.5px solid var(--border); padding: 16px; align-self: start; position: sticky; top: 100px; max-height: 82vh; overflow-y: auto; }
+  .alerts-panel h3 { font-size: 14.5px; font-weight: 900; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .alert-item { background: #fdf0ef; border: 1.5px solid #f8cdc9; border-radius: 12px; padding: 11px 13px; margin-bottom: 9px; font-size: 12px; }
+  .alert-item.vacancy { background: #f6f0fb; border-color: #dcc8ef; }
   .alert-item .t { font-weight: 800; color: var(--red); margin-bottom: 3px; }
+  .alert-item.vacancy .t { color: var(--purple); }
   .alert-item .d { color: #7a3530; font-size: 11px; }
-  .no-alerts { text-align: center; color: var(--muted); padding: 24px 10px; font-size: 12px; }
-  .no-alerts .icon { font-size: 34px; margin-bottom: 6px; }
+  .alert-item.vacancy .d { color: #5a3d78; }
+  .no-alerts { text-align: center; color: var(--muted); padding: 26px 10px; font-size: 12px; }
+  .no-alerts .icon { font-size: 36px; margin-bottom: 8px; }
+  .alerts-section-title { font-size: 11px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin: 14px 0 8px; }
 
-  .sync-note { font-size: 10px; color: var(--muted); text-align: center; margin-top: 8px; }
+  /* ===== محاكاة الفرع ===== */
+  .floor-sim { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px; }
+  .sim-zone { position: relative; border-radius: var(--radius); border: 2px solid var(--border); background: repeating-linear-gradient(90deg, #f2f7f2 0 42px, #e7efe8 42px 84px); box-shadow: var(--shadow); overflow: hidden; }
+  .sim-zone.shortage { border-color: var(--red); }
+  .sim-zone-label { position: absolute; top: 8px; right: 10px; background: rgba(255,255,255,.94); border-radius: 9px; padding: 5px 11px; font-size: 12px; font-weight: 900; color: var(--primary); z-index: 5; box-shadow: 0 1px 6px rgba(0,0,0,.15); }
+  .sim-zone-count { position: absolute; top: 8px; left: 10px; background: rgba(255,255,255,.94); border-radius: 9px; padding: 5px 10px; font-size: 11.5px; font-weight: 800; z-index: 5; }
+  .sim-person { position: absolute; width: 42px; text-align: center; cursor: pointer; z-index: 2; }
+  .sim-person .emoji { font-size: 25px; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+  .sim-person.faded .emoji { opacity: .35; filter: grayscale(80%); }
+  .sim-person .sim-label { font-size: 8px; font-weight: 800; background: rgba(255,255,255,.94); border-radius: 6px; padding: 1px 4px; white-space: nowrap; margin-top: -2px; display: inline-block; max-width: 74px; overflow: hidden; text-overflow: ellipsis; }
+  .sim-person .badge-pill { top: -10px; left: 50%; transform: translateX(-50%); }
 
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
+  /* ===== مودال تفاصيل الموظف ===== */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,30,20,.55); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
   .modal-overlay.show { display: flex; }
-  .modal { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 420px; padding: 0 0 24px; }
-  .modal-head { display: flex; align-items: center; gap: 12px; padding: 20px 20px 14px; border-bottom: 1.5px solid var(--border); }
-  .modal-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,var(--primary),var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; flex-shrink: 0; }
+  .modal { background: #fff; border-radius: 22px 22px 0 0; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; padding: 0 0 24px; }
+  .modal-head { display: flex; align-items: center; gap: 12px; padding: 20px 20px 14px; border-bottom: 1.5px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 2; }
+  .modal-avatar { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg,var(--primary),var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 900; flex-shrink: 0; }
   .modal-title { font-size: 16px; font-weight: 900; color: var(--primary); }
   .modal-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .modal-close { margin-right: auto; background: var(--bg); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 16px; cursor: pointer; }
   .modal-body { padding: 16px 20px; }
-  .status-now { text-align: center; border-radius: 12px; padding: 14px; font-weight: 900; font-size: 15px; margin-bottom: 16px; }
-  .status-now.ok { background: #e8f5ee; color: var(--accent); }
-  .status-now.bad { background: #fef0ef; color: var(--red); }
-  .modal-info-row { display: flex; justify-content: space-between; font-size: 12px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .status-now { text-align: center; border-radius: 14px; padding: 15px; font-weight: 900; font-size: 15px; margin-bottom: 16px; }
+  .status-now.ok { background: #e2f5e9; color: var(--accent); }
+  .status-now.bad { background: #fdf0ef; color: var(--red); }
+  .modal-info-row { display: flex; justify-content: space-between; font-size: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
   .modal-info-row span:first-child { color: var(--muted); font-weight: 700; }
   .modal-info-row span:last-child { font-weight: 800; }
   .override-label { font-size: 12px; font-weight: 800; color: var(--primary); margin: 16px 0 8px; }
   .override-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .override-btn { border: 1.5px solid var(--border); background: var(--bg); border-radius: 10px; padding: 10px 4px; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
-  .override-btn.active { border-color: var(--red); background: #fef0ef; color: var(--red); }
+  .override-btn { border: 1.5px solid var(--border); background: var(--bg); border-radius: 11px; padding: 10px 4px; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .override-btn.active { border-color: var(--red); background: #fdf0ef; color: var(--red); }
   .override-reset { width: 100%; margin-top: 8px; border: none; background: none; color: var(--muted); font-family: 'Cairo',sans-serif; font-size: 11px; padding: 8px; cursor: pointer; text-decoration: underline; }
 
-  /* ===== محاكاة الفرع (شخصيات متحركة داخل الأقسام) ===== */
-  .view-toggle { display: flex; gap: 4px; background: rgba(255,255,255,.15); border-radius: 10px; padding: 3px; }
-  .view-toggle button { border: none; background: transparent; color: #fff; padding: 6px 12px; border-radius: 8px; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; opacity: .75; }
-  .view-toggle button.active { background: #fff; color: var(--primary); opacity: 1; }
-  .floor-sim { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 14px; }
-  .sim-zone { position: relative; border-radius: var(--radius); border: 2px dashed var(--border); background:
-      repeating-linear-gradient(90deg, #eef3ee 0 40px, #e6ede7 40px 80px);
-      box-shadow: var(--shadow); overflow: hidden; }
-  .sim-zone.shortage { border-color: var(--red); border-style: solid; }
-  .sim-zone-label { position: absolute; top: 6px; right: 8px; background: rgba(255,255,255,.9); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 900; color: var(--primary); z-index: 5; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
-  .sim-zone-count { position: absolute; top: 6px; left: 8px; background: rgba(255,255,255,.9); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 800; z-index: 5; }
-  .sim-zone-count.short { color: var(--red); }
-  .sim-person { position: absolute; width: 40px; text-align: center; cursor: pointer; transition: left 2.6s ease-in-out, top 2.6s ease-in-out; z-index: 2; }
-  .sim-person .emoji { font-size: 24px; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); animation: sim-bob 0.6s ease-in-out infinite alternate; }
-  .sim-person.faded .emoji { opacity: .35; filter: grayscale(80%); animation: none; }
-  .sim-person .sim-label { font-size: 8px; font-weight: 800; background: rgba(255,255,255,.92); border-radius: 6px; padding: 1px 4px; white-space: nowrap; margin-top: -2px; display: inline-block; max-width: 70px; overflow: hidden; text-overflow: ellipsis; }
-  .sim-person .badge-pill { top: -10px; left: 50%; transform: translateX(-50%); }
-  @keyframes sim-bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+  /* ===== مودال إعداد المان باور ===== */
+  .settings-modal { max-width: 720px; }
+  .dept-setting { border: 1.5px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .dept-setting h4 { font-size: 13.5px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+  .shift-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .shift-input-box { text-align: center; }
+  .shift-input-box label { font-size: 10.5px; color: var(--muted); font-weight: 800; display: block; margin-bottom: 4px; }
+  .shift-input-box input { width: 100%; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 4px; text-align: center; font-family: 'Cairo',sans-serif; font-size: 14px; font-weight: 800; color: var(--primary); }
+  .dept-roster-note { font-size: 10px; color: var(--muted); margin-top: 8px; }
+  .save-bar { position: sticky; bottom: 0; background: #fff; padding: 14px 20px; border-top: 1.5px solid var(--border); }
+  .save-btn { width: 100%; background: linear-gradient(135deg,var(--accent),var(--primary2)); color: #fff; border: none; border-radius: 13px; padding: 14px; font-family: 'Cairo',sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
 
-  /* ===== تبويبات الشيفت (لايف / صباحي / بتوين / ليلي) ===== */
-  .shift-tabs { max-width: 1400px; margin: 0 auto; padding: 12px 16px 0; display: flex; gap: 8px; flex-wrap: wrap; }
-  .shift-tab { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; font-family: 'Cairo',sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; color: var(--text); position: relative; }
-  .shift-tab.active { border-color: var(--accent); background: #e8f5ee; color: var(--accent); }
-  .shift-tab .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); margin-left: 5px; animation: pulse-dot 1.2s infinite; }
-  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-  .shift-note { font-size: 10.5px; color: var(--muted); font-weight: 700; }
-  .not-logged { opacity: .55; }
-  .chip-status.not-logged, .avatar.not-logged { background: #eee !important; color: var(--muted) !important; }
+  /* ===== تقرير الطباعة ===== */
+  #printReport { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    #printReport, #printReport * { visibility: visible; }
+    #printReport { display: block !important; position: absolute; top: 0; right: 0; width: 100%; padding: 20px; }
+    .no-print { display: none !important; }
+  }
+  .pr-head { text-align: center; margin-bottom: 18px; border-bottom: 3px solid #123524; padding-bottom: 12px; }
+  .pr-head h1 { font-size: 20px; color: #123524; }
+  .pr-head .meta { font-size: 12px; color: #555; margin-top: 4px; }
+  .pr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+  .pr-table th, .pr-table td { border: 1px solid #ccc; padding: 7px 8px; text-align: center; }
+  .pr-table th { background: #eef3ee; font-weight: 800; }
+  .pr-table td.dept-name-cell { text-align: right; font-weight: 800; }
+  .pr-rec-hire { color: #c0392b; font-weight: 800; }
+  .pr-rec-watch { color: #e08c00; font-weight: 800; }
+  .pr-rec-ok { color: #2d8653; font-weight: 800; }
+  .pr-vacancy-list { font-size: 12px; margin-bottom: 6px; }
+  .pr-vacancy-list li { margin-bottom: 4px; }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
+<div class="top-bar no-print">
   <div>
     <h1>🏬 مجسم توزيع الموظفين</h1>
     <div class="sub">بيانات حقيقية من شيت "حضور و انصراف يومي" — مرتبطة بأكواد البصمة</div>
@@ -146,21 +176,24 @@
     </div>
     <select class="branch-select" id="branchSelect"></select>
     <span class="clock" id="clockDisplay">--:--</span>
-    <button class="top-btn" id="syncBtn" onclick="syncNow()">🔄 مزامنة الآن</button>
+    <button class="top-btn" onclick="openSettings()">⚙️ إعداد المان باور</button>
+    <button class="top-btn solid" onclick="printReport()">🖨️ طباعة / PDF</button>
+    <button class="top-btn" id="syncBtn" onclick="syncNow()">🔄 مزامنة</button>
   </div>
 </div>
 
-<div class="banner" id="syncBanner">جارِ التحميل...</div>
+<div class="banner no-print" id="syncBanner">جارِ التحميل...</div>
 
-<div class="shift-tabs" id="shiftTabs"></div>
+<div class="shift-tabs no-print" id="shiftTabs"></div>
 
-<div class="wrap">
+<div class="wrap no-print">
 
   <div class="summary">
     <div class="stat"><div class="n" id="statPresent">-</div><div class="l" id="statPresentLabel">حاضر الآن</div></div>
     <div class="stat"><div class="n" id="statRequired">-</div><div class="l" id="statRequiredLabel">المطلوب</div></div>
     <div class="stat"><div class="n" id="statRoster">-</div><div class="l">إجمالي روستر الشيفت</div></div>
-    <div class="stat warn"><div class="n" id="statAlerts">-</div><div class="l" id="statAlertsLabel">تنبيهات</div></div>
+    <div class="stat purple"><div class="n" id="statVacancies">-</div><div class="l">شواغر تحتاج توظيف</div></div>
+    <div class="stat warn"><div class="n" id="statAlerts">-</div><div class="l">تنبيهات</div></div>
   </div>
 
   <div class="floor-sim" id="floorSim"></div>
@@ -173,7 +206,7 @@
 
 </div>
 
-<div class="modal-overlay" id="empModal" onclick="if(event.target===this) closeEmpModal()">
+<div class="modal-overlay no-print" id="empModal" onclick="if(event.target===this) closeEmpModal()">
   <div class="modal">
     <div class="modal-head">
       <div class="modal-avatar" id="modalAvatar">--</div>
@@ -200,49 +233,38 @@
   </div>
 </div>
 
+<div class="modal-overlay no-print" id="settingsModal">
+  <div class="modal settings-modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">⚙️ إعداد المان باور لكل قسم</div>
+        <div class="modal-sub">حدد العدد المطلوب لكل قسم في كل شيفت — القيم دي هتتحسب عليها التنبيهات والتقرير</div>
+      </div>
+      <button class="modal-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body" id="settingsBody"></div>
+    <div class="save-bar"><button class="save-btn" onclick="saveSettings()">حفظ الإعدادات</button></div>
+  </div>
+</div>
+
+<div id="printReport"></div>
+
 <script>
 /* =========================================================
    البيانات: لقطة (snapshot) حقيقية من شيت "حضور و انصراف يومي"
-   على درايف الداتا سنتر — بالأكواد والأسماء والأقسام والشيفتات
-   وحالة الحضور (atte) وقت آخر مزامنة.
-   شكل البيانات: BRANCH_DATA[اسم الفرع][اسم القسم] = [موظف...]
-   كل موظف: { name, role, shift, code, atte }
+   على درايف الداتا سنتر. لكل قسم: active (موظفين حاليين) و
+   left (موظفين "تصفية/ترك عمل" — دول اللي محتاجين توظيف بدالهم).
 ========================================================= */
-const BRANCH_DATA = {"البيطاش الرئيسي": {"قسم البقاله": [{"name": "حسن خالد حسن", "role": "شيف", "shift": "ليلي", "code": "11", "atte": "غياب"}, {"name": "مروان مصطفي حنفي", "role": "مساعد شيف", "shift": "صباحي", "code": "13", "atte": "غياب"}, {"name": "ياسين علاء الدين احمد", "role": "training", "shift": "صباحي", "code": "19", "atte": "حضور"}, {"name": "حازم عبد المنعم ابراهيم", "role": "مساعد شيف", "shift": "بتوين", "code": "31", "atte": "حضور"}, {"name": "عصام علي عبد العال", "role": "شيف", "shift": "صباحي", "code": "34", "atte": "حضور"}, {"name": "عبد الرحمن علي حسن عبد الرازق", "role": "شيف", "shift": "ليلي", "code": "37", "atte": "حضور"}, {"name": "محمود محمد محمود", "role": "شيف اول", "shift": "ليلي", "code": "47", "atte": "حضور"}, {"name": "محمود سعيد ابراهيم", "role": "ليدر قسم", "shift": "صباحي", "code": "48", "atte": "حضور"}, {"name": "شهاب رشيد راشد", "role": "مساعد شيف", "shift": "ليلي", "code": "55", "atte": "حضور"}, {"name": "مهند احمد عبد الحكيم", "role": "head of fueling department", "shift": "ليلي", "code": "63", "atte": "حضور"}, {"name": "يوسف اشرف محمد محمد", "role": "شيف اول", "shift": "صباحي", "code": "68", "atte": "حضور"}, {"name": "احمد عثمان عبد الوهاب", "role": "شيف", "shift": "ليلي", "code": "71", "atte": "غياب"}, {"name": "عبد الله ابراهيم عبد الستار", "role": "شيف", "shift": "صباحي", "code": "125", "atte": "حضور"}, {"name": "مازن علي عبد الحليم", "role": "training", "shift": "صباحي", "code": "165", "atte": "حضور"}, {"name": "ادهم محمد خميس", "role": "شيف", "shift": "صباحي", "code": "183", "atte": "غياب"}, {"name": "مصطفي محمود محمد", "role": "شيف", "shift": "بتوين", "code": "193", "atte": "حضور"}, {"name": "عمر عبد الجيد عبد الستار", "role": "مساعد شيف", "shift": "صباحي", "code": "209", "atte": "غياب"}, {"name": "شريف سعد علي", "role": "شيف", "shift": "صباحي", "code": "210", "atte": "غياب"}, {"name": "محمد زكريا يحي", "role": "شيف", "shift": "ليلي", "code": "211", "atte": "حضور"}], "دليفري": [{"name": "ناديه ابراهيم احمد", "role": "مٌعد اوردرات", "shift": "بتوين", "code": "14", "atte": "حضور"}, {"name": "احمد محمد ابراهيم", "role": "دليفري", "shift": "بتوين", "code": "52", "atte": "حضور"}, {"name": "اسامه عيد يوسف", "role": "دليفري", "shift": "بتوين", "code": "70", "atte": "حضور"}, {"name": "عبد العزيز محمد حسن", "role": "دليفري", "shift": "بتوين", "code": "113", "atte": "حضور"}], "vip": [{"name": "روان عثمان احمد", "role": "ليدر قسم", "shift": "بتوين", "code": "15", "atte": "حضور"}, {"name": "سهيلة مدحت احمد", "role": "سيلز", "shift": "صباحي", "code": "28", "atte": "غياب"}, {"name": "ايمان عزالدين عبدالعزيز", "role": "سيلز", "shift": "صباحي", "code": "51", "atte": "حضور"}], "قسم الكاشير": [{"name": "عبد الرحمن مصطفي عبده", "role": "كاشير", "shift": "ليلي", "code": "18", "atte": "حضور"}, {"name": "مهند محمد احمد", "role": "هيد كاشير", "shift": "صباحي", "code": "21", "atte": "حضور"}, {"name": "نور الدين حسين احمد", "role": "كاشير", "shift": "صباحي", "code": "41", "atte": "حضور"}, {"name": "محمد جمال محمد البكري", "role": "مراجع كاشير", "shift": "صباحي", "code": "61", "atte": "حضور"}, {"name": "محمد شعبان شحاته", "role": "كاشير", "shift": "صباحي", "code": "67", "atte": "غياب"}, {"name": "محمد حمدي حامد", "role": "كاشير", "shift": "ليلي", "code": "81", "atte": "غياب"}, {"name": "عمر عادل عبد الحميد", "role": "مراجع كاشير", "shift": "ليلي", "code": "84", "atte": "حضور"}, {"name": "مازن اسماعيل فهمي", "role": "مراجع كاشير", "shift": "ليلي", "code": "114", "atte": "حضور"}, {"name": "مصطفي اشرف محمد", "role": "كاشير", "shift": "ليلي", "code": "118", "atte": "غياب"}, {"name": "سراج الدين محمد احمد", "role": "مراجع كاشير", "shift": "ليلي", "code": "133", "atte": "حضور"}, {"name": "عبدالرحمن محمد محمود", "role": "مراجع كاشير", "shift": "ليلي", "code": "135", "atte": "حضور"}, {"name": "مهند وليد بكر", "role": "كاشير", "shift": "صباحي", "code": "148", "atte": "حضور"}, {"name": "يوسف احمد مرسي", "role": "مراجع كاشير", "shift": "صباحي", "code": "191", "atte": "غياب"}, {"name": "ابراهيم محمد ابراهيم", "role": "كاشير", "shift": "ليلي", "code": "200", "atte": "حضور"}, {"name": "اسامه اشرف علي", "role": "كاشير", "shift": "صباحي", "code": "201", "atte": "حضور"}], "قسم الامن و المراقبه": [{"name": "يحيي محسن عبد الباسط", "role": "مراقب كاميرا", "shift": "صباحي", "code": "20", "atte": "حضور"}, {"name": "علاء عبدالواحد محمد", "role": "موظف امن", "shift": "ليلي", "code": "102", "atte": "حضور"}, {"name": "ياقوت ياسر علام", "role": "مراقب كاميرا", "shift": "ليلي", "code": "150", "atte": "غياب"}, {"name": "عيد السيد عيد", "role": "موظف امن", "shift": "صباحي", "code": "168", "atte": "حضور"}], "قسم الايس كريم": [{"name": "خالد النبوي محمد", "role": "شيف باريستا", "shift": "صباحي", "code": "23", "atte": "حضور"}, {"name": "ابراهيم فتحي احمد", "role": "شيف باريستا", "shift": "صباحي", "code": "29", "atte": "حضور"}, {"name": "وليد عادل عبد العال", "role": "مسؤول قسم الايس و المشروبات", "shift": "بتوين", "code": "64", "atte": "حضور"}, {"name": "عمر محمد حبشي", "role": "باريستا", "shift": "صباحي", "code": "120", "atte": "حضور"}, {"name": "عمار علاء الدين ابراهيم", "role": "شيف باريستا", "shift": "صباحي", "code": "144", "atte": "حضور"}], "قسم الفاكهه": [{"name": "احمد عادل عبد القادر", "role": "بائع فريش", "shift": "ليلي", "code": "26", "atte": "حضور"}, {"name": "علي ضاحي علي امام", "role": "سيلز", "shift": "بتوين", "code": "158", "atte": "حضور"}, {"name": "محمد وليد خميس", "role": "سيلز", "shift": "صباحي", "code": "220", "atte": "حضور"}], "قسم الخدمات": [{"name": "مؤمن محمد احمد", "role": "عامل خدمات", "shift": "صباحي", "code": "32", "atte": "حضور"}, {"name": "محمد عبد الرؤوف سيد", "role": "عامل خدمات", "shift": "ليلي", "code": "205", "atte": "حضور"}], "قسم التشغيل": [{"name": "فراس مرسي غريب", "role": "مدير فريش فود", "shift": "بتوين", "code": "44", "atte": "حضور"}, {"name": "اسلام عبدالمنعم خميس", "role": "نائب مدير فرع", "shift": "ليلي", "code": "65", "atte": "غياب"}], "قسم الداتا انتري": [{"name": "عبد الرحمن اشرف عبد الحميد", "role": "مراقب مخزون", "shift": "صباحي", "code": "50", "atte": "حضور"}, {"name": "يوسف محمد حسن", "role": "داتا انتري", "shift": "صباحي", "code": "110", "atte": "حضور"}], "خدمه العملاء": [{"name": "خالد وليد عاطف", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "58", "atte": "حضور"}, {"name": "فضل امل ابو الفضل", "role": "مسؤول تنسيق", "shift": "صباحي", "code": "79", "atte": "حضور"}, {"name": "يوسف رمضان محمد", "role": "مشرف خدمة عملاء", "shift": "ليلي", "code": "80", "atte": "حضور"}, {"name": "احمد مصطفي احمد", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "101", "atte": "حضور"}, {"name": "منار مدحت احمد", "role": "موظف اول خدمه عملاء", "shift": "بتوين", "code": "127", "atte": "حضور"}, {"name": "حسام الدين محمد محمد", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "134", "atte": "غياب"}, {"name": "منه الله محمد فاروق", "role": "سيلز", "shift": "بتوين", "code": "151", "atte": "حضور"}, {"name": "محمد صلاح عيد محمد", "role": "مسؤول استلامات", "shift": "صباحي", "code": "156", "atte": "حضور"}, {"name": "فارس محمد اسماعيل", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "204", "atte": "حضور"}, {"name": "علي سعد علي", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "207", "atte": "حضور"}, {"name": "محمود سعيد محمد", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "212", "atte": "غياب"}, {"name": "احمد حسين محمد", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "218", "atte": "حضور"}], "تسعير": [{"name": "ايه محمد احمد", "role": "موظف تسعير", "shift": "بتوين", "code": "119", "atte": "حضور"}], "كول سنتر": [{"name": "عمر مصطفي عبدٌ", "role": "كول سنتر", "shift": "بتوين", "code": "180", "atte": "غياب"}, {"name": "كريم اشرف محمود", "role": "كول سنتر", "shift": "بتوين", "code": "181", "atte": "غياب"}], "بيكب": [{"name": "سندس علاء عيد", "role": "موظف فريق اعداد", "shift": "صباحي", "code": "224", "atte": "حضور"}]}, "عين شمس": {"قسم البقاله": [{"name": "حسام محمد علي", "role": "شيف", "shift": "صباحي", "code": "16", "atte": "غياب"}, {"name": "سامح محمد كامل", "role": "شيف", "shift": "صباحي", "code": "25", "atte": "حضور"}, {"name": "عبدالله مسعود سعيد", "role": "شيف", "shift": "ليلي", "code": "60", "atte": "حضور"}, {"name": "حلمي محمد حلمي", "role": "شيف", "shift": "صباحي", "code": "77", "atte": "حضور"}, {"name": "احمد اشرف احمد", "role": "مساعد شيف", "shift": "صباحي", "code": "121", "atte": "حضور"}], "قسم الكاشير": [{"name": "مصطفي حمدي احمد", "role": "كاشير", "shift": "بتوين", "code": "42", "atte": "غياب"}, {"name": "مؤمن علي فوزي", "role": "كاشير", "shift": "صباحي", "code": "76", "atte": "حضور"}, {"name": "عبد الله محمد عبده", "role": "كاشير", "shift": "ليلي", "code": "163", "atte": "حضور"}], "قسم الامن و المراقبه": [{"name": "حمدنا الله محمد امير", "role": "موظف امن", "shift": "صباحي", "code": "43", "atte": "حضور"}], "قسم التشغيل": [{"name": "عبد الرحمن محمد عبد الرحيم", "role": "مدير شيفت", "shift": "ليلي", "code": "74", "atte": "حضور"}, {"name": "محمود سعيد توفيق", "role": "مدير شيفتا", "shift": "صباحي", "code": "189", "atte": "حضور"}], "قسم الموارد البشريه": [{"name": "ندى محمد سعيد", "role": "اخصائي موارد بشريه", "shift": "بتوين", "code": "85", "atte": "حضور"}], "قسم الداتا انتري": [{"name": "احمد السيد عبد اللطيف", "role": "مسؤول استلامات", "shift": "صباحي", "code": "104", "atte": "غياب"}], "خدمه العملاء": [{"name": "عبد الرحمن رضا ربيع", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "145", "atte": "حضور"}, {"name": "مريم شعبان عبد السلام", "role": "سيلز", "shift": "بتوين", "code": "169", "atte": "غياب"}, {"name": "محمد يحيي محمد", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "173", "atte": "حضور"}, {"name": "عبد الله طارق فتحي", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "187", "atte": "غياب"}, {"name": "فاتن محمد داود السيد", "role": "سيلز", "shift": "صباحي", "code": "195", "atte": "حضور"}]}, "المصنع": {"قسم التصنيع": [{"name": "محمد يسري", "role": "Training", "shift": "صباحي", "code": "24", "atte": "حضور"}, {"name": "فرحه فتح الله", "role": "training", "shift": "صباحي", "code": "33", "atte": "حضور"}, {"name": "نجلاء كمال سيد", "role": "training", "shift": "صباحي", "code": "36", "atte": "حضور"}, {"name": "سيدة مرسي اسماعيل", "role": "موظف فريق اعداد", "shift": "صباحي", "code": "54", "atte": "حضور"}, {"name": "محمد عماد علي مبروك", "role": "شيف تجهيزات", "shift": "صباحي", "code": "105", "atte": "حضور"}, {"name": "مصطفي علي عبد الخالق", "role": "شيف", "shift": "ليلي", "code": "146", "atte": "حضور"}, {"name": "ابراهيم عبدالسلام السيد", "role": "شيف", "shift": "صباحي", "code": "147", "atte": "حضور"}, {"name": "محمود محمد رزق", "role": "مساعد شيف تجهيزات", "shift": "صباحي", "code": "155", "atte": "حضور"}, {"name": "مؤمن محمد شعيب", "role": "training", "shift": "صباحي", "code": "171", "atte": "حضور"}, {"name": "احمد السيد حجازي", "role": "شيف", "shift": "صباحي", "code": "197", "atte": "حضور"}], "قسم المعمل": [{"name": "ياسر ابراهيم محمد", "role": "training", "shift": "صباحي", "code": "30", "atte": "حضور"}, {"name": "عماد علي مبروك مرزوق", "role": "مدير قسم المعمل", "shift": "صباحي", "code": "109", "atte": "حضور"}, {"name": "هبه محمود نصر", "role": "Training", "shift": "صباحي", "code": "137", "atte": "حضور"}, {"name": "محمد حسني سليمان احمد", "role": "مساعد شيف معمل", "shift": "صباحي", "code": "157", "atte": "حضور"}, {"name": "محمد عبده محمود", "role": "مساعد شيف معمل", "shift": "صباحي", "code": "162", "atte": "حضور"}], "قسم الداتا انتري": [{"name": "عبدالرحمن طارق رمضان", "role": "داتا انتري", "shift": "صباحي", "code": "39", "atte": "حضور"}, {"name": "ايه ممدوح محمد", "role": "كوست كونترول", "shift": "صباحي", "code": "57", "atte": "حضور"}, {"name": "حسن جعفر الصادق", "role": "مسؤول قسم الداتا انتري", "shift": "بتوين", "code": "100", "atte": "غياب"}], "قسم التركي": [{"name": "محمد جمال عبدالعال", "role": "فني تجهيز جبن", "shift": "صباحي", "code": "49", "atte": "حضور"}, {"name": "علاء عصام درغام", "role": "شيف اول معمل", "shift": "صباحي", "code": "112", "atte": "حضور"}, {"name": "محمد عبد المنعم حامد", "role": "شيف اول معمل", "shift": "صباحي", "code": "141", "atte": "حضور"}], "قسم البيض": [{"name": "هيثم محمد عبد الغني", "role": "موظف فرز و تعبئه بيض", "shift": "صباحي", "code": "66", "atte": "حضور"}], "قسم الموارد البشريه": [{"name": "ياسمين عصام محمد", "role": "HR and finance specialist", "shift": "بتوين", "code": "94", "atte": "حضور"}], "قسم الحسابات": [{"name": "احمد صلاح عبد الحكيم", "role": "محاسب خزينه", "shift": "صباحي", "code": "103", "atte": "حضور"}], "قسم المخازن": [{"name": "محمد اسامه احمد", "role": "موظف مخزن", "shift": "صباحي", "code": "106", "atte": "غياب"}, {"name": "محمد احمد عثمان", "role": "مدير مخزن", "shift": "صباحي", "code": "108", "atte": "حضور"}, {"name": "محمد شعيب محمد حافظ", "role": "سائق", "shift": "صباحي", "code": "129", "atte": "حضور"}, {"name": "محمود حمادة محمد فاخر", "role": "موظف مخزن", "shift": "صباحي", "code": "164", "atte": "حضور"}, {"name": "مروان احمد عبد الحكيم", "role": "عامل", "shift": "صباحي", "code": "190", "atte": "حضور"}, {"name": "حازم محمد احمد", "role": "موظف مخزن", "shift": "صباحي", "code": "192", "atte": "حضور"}], "قسم الامن و المراقبه": [{"name": "احمد رمزي الجندي", "role": "امين مخزن", "shift": "ليلي", "code": "111", "atte": "حضور"}, {"name": "طارق محمد جاب الله", "role": "فرد امن مصنع", "shift": "ليلي", "code": "122", "atte": "حضور"}], "قسم الرنجه": [{"name": "مصطفي السيد احمد", "role": "شيف اول معمل", "shift": "صباحي", "code": "153", "atte": "حضور"}], "قسم الجوده": [{"name": "شكري عبداللطيف الكردي", "role": "ليدر جوده", "shift": "صباحي", "code": "203", "atte": "حضور"}]}};
+const BRANCH_DATA = {"البيطاش الرئيسي": {"قسم البقاله": {"active": [{"name": "حسن خالد حسن", "role": "شيف", "shift": "ليلي", "code": "11", "atte": "غياب"}, {"name": "مروان مصطفي حنفي", "role": "مساعد شيف", "shift": "صباحي", "code": "13", "atte": "غياب"}, {"name": "ياسين علاء الدين احمد", "role": "training", "shift": "صباحي", "code": "19", "atte": "حضور"}, {"name": "حازم عبد المنعم ابراهيم", "role": "مساعد شيف", "shift": "بتوين", "code": "31", "atte": "حضور"}, {"name": "عصام علي عبد العال", "role": "شيف", "shift": "صباحي", "code": "34", "atte": "حضور"}, {"name": "عبد الرحمن علي حسن عبد الرازق", "role": "شيف", "shift": "ليلي", "code": "37", "atte": "حضور"}, {"name": "محمود محمد محمود", "role": "شيف اول", "shift": "ليلي", "code": "47", "atte": "حضور"}, {"name": "محمود سعيد ابراهيم", "role": "ليدر قسم", "shift": "صباحي", "code": "48", "atte": "حضور"}, {"name": "شهاب رشيد راشد", "role": "مساعد شيف", "shift": "ليلي", "code": "55", "atte": "حضور"}, {"name": "مهند احمد عبد الحكيم", "role": "head of fueling department", "shift": "ليلي", "code": "63", "atte": "حضور"}, {"name": "يوسف اشرف محمد محمد", "role": "شيف اول", "shift": "صباحي", "code": "68", "atte": "حضور"}, {"name": "احمد عثمان عبد الوهاب", "role": "شيف", "shift": "ليلي", "code": "71", "atte": "غياب"}, {"name": "عبد الله ابراهيم عبد الستار", "role": "شيف", "shift": "صباحي", "code": "125", "atte": "حضور"}, {"name": "مازن علي عبد الحليم", "role": "training", "shift": "صباحي", "code": "165", "atte": "حضور"}, {"name": "ادهم محمد خميس", "role": "شيف", "shift": "صباحي", "code": "183", "atte": "غياب"}, {"name": "مصطفي محمود محمد", "role": "شيف", "shift": "بتوين", "code": "193", "atte": "حضور"}, {"name": "عمر عبد الجيد عبد الستار", "role": "مساعد شيف", "shift": "صباحي", "code": "209", "atte": "غياب"}, {"name": "شريف سعد علي", "role": "شيف", "shift": "صباحي", "code": "210", "atte": "غياب"}, {"name": "محمد زكريا يحي", "role": "شيف", "shift": "ليلي", "code": "211", "atte": "حضور"}], "left": []}, "دليفري": {"active": [{"name": "ناديه ابراهيم احمد", "role": "مٌعد اوردرات", "shift": "بتوين", "code": "14", "atte": "حضور"}, {"name": "احمد محمد ابراهيم", "role": "دليفري", "shift": "بتوين", "code": "52", "atte": "حضور"}, {"name": "اسامه عيد يوسف", "role": "دليفري", "shift": "بتوين", "code": "70", "atte": "حضور"}, {"name": "عبد العزيز محمد حسن", "role": "دليفري", "shift": "بتوين", "code": "113", "atte": "حضور"}], "left": []}, "vip": {"active": [{"name": "روان عثمان احمد", "role": "ليدر قسم", "shift": "بتوين", "code": "15", "atte": "حضور"}, {"name": "سهيلة مدحت احمد", "role": "سيلز", "shift": "صباحي", "code": "28", "atte": "غياب"}, {"name": "ايمان عزالدين عبدالعزيز", "role": "سيلز", "shift": "صباحي", "code": "51", "atte": "حضور"}], "left": []}, "قسم الكاشير": {"active": [{"name": "عبد الرحمن مصطفي عبده", "role": "كاشير", "shift": "ليلي", "code": "18", "atte": "حضور"}, {"name": "مهند محمد احمد", "role": "هيد كاشير", "shift": "صباحي", "code": "21", "atte": "حضور"}, {"name": "نور الدين حسين احمد", "role": "كاشير", "shift": "صباحي", "code": "41", "atte": "حضور"}, {"name": "محمد جمال محمد البكري", "role": "مراجع كاشير", "shift": "صباحي", "code": "61", "atte": "حضور"}, {"name": "محمد شعبان شحاته", "role": "كاشير", "shift": "صباحي", "code": "67", "atte": "غياب"}, {"name": "محمد حمدي حامد", "role": "كاشير", "shift": "ليلي", "code": "81", "atte": "غياب"}, {"name": "عمر عادل عبد الحميد", "role": "مراجع كاشير", "shift": "ليلي", "code": "84", "atte": "حضور"}, {"name": "مازن اسماعيل فهمي", "role": "مراجع كاشير", "shift": "ليلي", "code": "114", "atte": "حضور"}, {"name": "مصطفي اشرف محمد", "role": "كاشير", "shift": "ليلي", "code": "118", "atte": "غياب"}, {"name": "سراج الدين محمد احمد", "role": "مراجع كاشير", "shift": "ليلي", "code": "133", "atte": "حضور"}, {"name": "عبدالرحمن محمد محمود", "role": "مراجع كاشير", "shift": "ليلي", "code": "135", "atte": "حضور"}, {"name": "مهند وليد بكر", "role": "كاشير", "shift": "صباحي", "code": "148", "atte": "حضور"}, {"name": "يوسف احمد مرسي", "role": "مراجع كاشير", "shift": "صباحي", "code": "191", "atte": "غياب"}, {"name": "ابراهيم محمد ابراهيم", "role": "كاشير", "shift": "ليلي", "code": "200", "atte": "حضور"}, {"name": "اسامه اشرف علي", "role": "كاشير", "shift": "صباحي", "code": "201", "atte": "حضور"}], "left": []}, "قسم الامن و المراقبه": {"active": [{"name": "يحيي محسن عبد الباسط", "role": "مراقب كاميرا", "shift": "صباحي", "code": "20", "atte": "حضور"}, {"name": "علاء عبدالواحد محمد", "role": "موظف امن", "shift": "ليلي", "code": "102", "atte": "حضور"}, {"name": "ياقوت ياسر علام", "role": "مراقب كاميرا", "shift": "ليلي", "code": "150", "atte": "غياب"}, {"name": "عيد السيد عيد", "role": "موظف امن", "shift": "صباحي", "code": "168", "atte": "حضور"}], "left": []}, "قسم الايس كريم": {"active": [{"name": "خالد النبوي محمد", "role": "شيف باريستا", "shift": "صباحي", "code": "23", "atte": "حضور"}, {"name": "ابراهيم فتحي احمد", "role": "شيف باريستا", "shift": "صباحي", "code": "29", "atte": "حضور"}, {"name": "وليد عادل عبد العال", "role": "مسؤول قسم الايس و المشروبات", "shift": "بتوين", "code": "64", "atte": "حضور"}, {"name": "عمر محمد حبشي", "role": "باريستا", "shift": "صباحي", "code": "120", "atte": "حضور"}, {"name": "عمار علاء الدين ابراهيم", "role": "شيف باريستا", "shift": "صباحي", "code": "144", "atte": "حضور"}], "left": []}, "قسم الفاكهه": {"active": [{"name": "احمد عادل عبد القادر", "role": "بائع فريش", "shift": "ليلي", "code": "26", "atte": "حضور"}, {"name": "علي ضاحي علي امام", "role": "سيلز", "shift": "بتوين", "code": "158", "atte": "حضور"}, {"name": "محمد وليد خميس", "role": "سيلز", "shift": "صباحي", "code": "220", "atte": "حضور"}], "left": []}, "قسم الخدمات": {"active": [{"name": "مؤمن محمد احمد", "role": "عامل خدمات", "shift": "صباحي", "code": "32", "atte": "حضور"}, {"name": "محمد عبد الرؤوف سيد", "role": "عامل خدمات", "shift": "ليلي", "code": "205", "atte": "حضور"}], "left": []}, "قسم التشغيل": {"active": [{"name": "فراس مرسي غريب", "role": "مدير فريش فود", "shift": "بتوين", "code": "44", "atte": "حضور"}, {"name": "اسلام عبدالمنعم خميس", "role": "نائب مدير فرع", "shift": "ليلي", "code": "65", "atte": "غياب"}], "left": []}, "قسم الداتا انتري": {"active": [{"name": "عبد الرحمن اشرف عبد الحميد", "role": "مراقب مخزون", "shift": "صباحي", "code": "50", "atte": "حضور"}, {"name": "يوسف محمد حسن", "role": "داتا انتري", "shift": "صباحي", "code": "110", "atte": "حضور"}], "left": []}, "خدمه العملاء": {"active": [{"name": "خالد وليد عاطف", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "58", "atte": "حضور"}, {"name": "فضل امل ابو الفضل", "role": "مسؤول تنسيق", "shift": "صباحي", "code": "79", "atte": "حضور"}, {"name": "يوسف رمضان محمد", "role": "مشرف خدمة عملاء", "shift": "ليلي", "code": "80", "atte": "حضور"}, {"name": "احمد مصطفي احمد", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "101", "atte": "حضور"}, {"name": "منار مدحت احمد", "role": "موظف اول خدمه عملاء", "shift": "بتوين", "code": "127", "atte": "حضور"}, {"name": "حسام الدين محمد محمد", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "134", "atte": "غياب"}, {"name": "منه الله محمد فاروق", "role": "سيلز", "shift": "بتوين", "code": "151", "atte": "حضور"}, {"name": "محمد صلاح عيد محمد", "role": "مسؤول استلامات", "shift": "صباحي", "code": "156", "atte": "حضور"}, {"name": "فارس محمد اسماعيل", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "204", "atte": "حضور"}, {"name": "علي سعد علي", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "207", "atte": "حضور"}, {"name": "محمود سعيد محمد", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "212", "atte": "غياب"}, {"name": "احمد حسين محمد", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "218", "atte": "حضور"}], "left": []}, "تسعير": {"active": [{"name": "ايه محمد احمد", "role": "موظف تسعير", "shift": "بتوين", "code": "119", "atte": "حضور"}], "left": []}, "كول سنتر": {"active": [{"name": "عمر مصطفي عبدٌ", "role": "كول سنتر", "shift": "بتوين", "code": "180", "atte": "غياب"}, {"name": "كريم اشرف محمود", "role": "كول سنتر", "shift": "بتوين", "code": "181", "atte": "غياب"}], "left": []}, "بيكب": {"active": [{"name": "سندس علاء عيد", "role": "موظف فريق اعداد", "shift": "صباحي", "code": "224", "atte": "حضور"}], "left": []}}, "عين شمس": {"قسم البقاله": {"active": [{"name": "حسام محمد علي", "role": "شيف", "shift": "صباحي", "code": "16", "atte": "غياب"}, {"name": "سامح محمد كامل", "role": "شيف", "shift": "صباحي", "code": "25", "atte": "حضور"}, {"name": "عبدالله مسعود سعيد", "role": "شيف", "shift": "ليلي", "code": "60", "atte": "حضور"}, {"name": "حلمي محمد حلمي", "role": "شيف", "shift": "صباحي", "code": "77", "atte": "حضور"}, {"name": "احمد اشرف احمد", "role": "مساعد شيف", "shift": "صباحي", "code": "121", "atte": "حضور"}], "left": []}, "قسم الكاشير": {"active": [{"name": "مصطفي حمدي احمد", "role": "كاشير", "shift": "بتوين", "code": "42", "atte": "غياب"}, {"name": "مؤمن علي فوزي", "role": "كاشير", "shift": "صباحي", "code": "76", "atte": "حضور"}, {"name": "عبد الله محمد عبده", "role": "كاشير", "shift": "ليلي", "code": "163", "atte": "حضور"}], "left": []}, "قسم الامن و المراقبه": {"active": [{"name": "حمدنا الله محمد امير", "role": "موظف امن", "shift": "صباحي", "code": "43", "atte": "حضور"}], "left": []}, "قسم التشغيل": {"active": [{"name": "عبد الرحمن محمد عبد الرحيم", "role": "مدير شيفت", "shift": "ليلي", "code": "74", "atte": "حضور"}, {"name": "محمود سعيد توفيق", "role": "مدير شيفتا", "shift": "صباحي", "code": "189", "atte": "حضور"}], "left": []}, "قسم الموارد البشريه": {"active": [{"name": "ندى محمد سعيد", "role": "اخصائي موارد بشريه", "shift": "بتوين", "code": "85", "atte": "حضور"}], "left": []}, "قسم الداتا انتري": {"active": [{"name": "احمد السيد عبد اللطيف", "role": "مسؤول استلامات", "shift": "صباحي", "code": "104", "atte": "غياب"}], "left": []}, "خدمه العملاء": {"active": [{"name": "عبد الرحمن رضا ربيع", "role": "موظف خدمة عملاء", "shift": "ليلي", "code": "145", "atte": "حضور"}, {"name": "مريم شعبان عبد السلام", "role": "سيلز", "shift": "بتوين", "code": "169", "atte": "غياب"}, {"name": "محمد يحيي محمد", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "173", "atte": "حضور"}, {"name": "عبد الله طارق فتحي", "role": "موظف خدمة عملاء", "shift": "صباحي", "code": "187", "atte": "غياب"}, {"name": "فاتن محمد داود السيد", "role": "سيلز", "shift": "صباحي", "code": "195", "atte": "حضور"}], "left": [{"name": "ابراهيم حسن ابراهيم", "role": "موظف اول خدمه عملاء", "shift": "ليلي", "code": "215", "atte": "حضور", "leftReason": "ترك عمل"}]}}, "المصنع": {"قسم التصنيع": {"active": [{"name": "محمد يسري", "role": "Training", "shift": "صباحي", "code": "24", "atte": "حضور"}, {"name": "فرحه فتح الله", "role": "training", "shift": "صباحي", "code": "33", "atte": "حضور"}, {"name": "نجلاء كمال سيد", "role": "training", "shift": "صباحي", "code": "36", "atte": "حضور"}, {"name": "سيدة مرسي اسماعيل", "role": "موظف فريق اعداد", "shift": "صباحي", "code": "54", "atte": "حضور"}, {"name": "محمد عماد علي مبروك", "role": "شيف تجهيزات", "shift": "صباحي", "code": "105", "atte": "حضور"}, {"name": "مصطفي علي عبد الخالق", "role": "شيف", "shift": "ليلي", "code": "146", "atte": "حضور"}, {"name": "ابراهيم عبدالسلام السيد", "role": "شيف", "shift": "صباحي", "code": "147", "atte": "حضور"}, {"name": "محمود محمد رزق", "role": "مساعد شيف تجهيزات", "shift": "صباحي", "code": "155", "atte": "حضور"}, {"name": "مؤمن محمد شعيب", "role": "training", "shift": "صباحي", "code": "171", "atte": "حضور"}, {"name": "احمد السيد حجازي", "role": "شيف", "shift": "صباحي", "code": "197", "atte": "حضور"}], "left": [{"name": "اسماء قاسم عجمي محمد", "role": "موظف فريق اعداد", "shift": "صباحي", "code": "27", "atte": "غياب", "leftReason": "ترك عمل"}]}, "قسم المعمل": {"active": [{"name": "ياسر ابراهيم محمد", "role": "training", "shift": "صباحي", "code": "30", "atte": "حضور"}, {"name": "عماد علي مبروك مرزوق", "role": "مدير قسم المعمل", "shift": "صباحي", "code": "109", "atte": "حضور"}, {"name": "هبه محمود نصر", "role": "Training", "shift": "صباحي", "code": "137", "atte": "حضور"}, {"name": "محمد حسني سليمان احمد", "role": "مساعد شيف معمل", "shift": "صباحي", "code": "157", "atte": "حضور"}, {"name": "محمد عبده محمود", "role": "مساعد شيف معمل", "shift": "صباحي", "code": "162", "atte": "حضور"}], "left": []}, "قسم الداتا انتري": {"active": [{"name": "عبدالرحمن طارق رمضان", "role": "داتا انتري", "shift": "صباحي", "code": "39", "atte": "حضور"}, {"name": "ايه ممدوح محمد", "role": "كوست كونترول", "shift": "صباحي", "code": "57", "atte": "حضور"}, {"name": "حسن جعفر الصادق", "role": "مسؤول قسم الداتا انتري", "shift": "بتوين", "code": "100", "atte": "غياب"}], "left": []}, "قسم التركي": {"active": [{"name": "محمد جمال عبدالعال", "role": "فني تجهيز جبن", "shift": "صباحي", "code": "49", "atte": "حضور"}, {"name": "علاء عصام درغام", "role": "شيف اول معمل", "shift": "صباحي", "code": "112", "atte": "حضور"}, {"name": "محمد عبد المنعم حامد", "role": "شيف اول معمل", "shift": "صباحي", "code": "141", "atte": "حضور"}], "left": []}, "قسم البيض": {"active": [{"name": "هيثم محمد عبد الغني", "role": "موظف فرز و تعبئه بيض", "shift": "صباحي", "code": "66", "atte": "حضور"}], "left": []}, "انتاج معلبات": {"active": [], "left": [{"name": "عمر محمد الخليل", "role": "مٌشغل ماكينه", "shift": "صباحي", "code": "83", "atte": "حضور", "leftReason": "ترك عمل"}]}, "قسم الموارد البشريه": {"active": [{"name": "ياسمين عصام محمد", "role": "HR and finance specialist", "shift": "بتوين", "code": "94", "atte": "حضور"}], "left": []}, "قسم الحسابات": {"active": [{"name": "احمد صلاح عبد الحكيم", "role": "محاسب خزينه", "shift": "صباحي", "code": "103", "atte": "حضور"}], "left": []}, "قسم المخازن": {"active": [{"name": "محمد اسامه احمد", "role": "موظف مخزن", "shift": "صباحي", "code": "106", "atte": "غياب"}, {"name": "محمد احمد عثمان", "role": "مدير مخزن", "shift": "صباحي", "code": "108", "atte": "حضور"}, {"name": "محمد شعيب محمد حافظ", "role": "سائق", "shift": "صباحي", "code": "129", "atte": "حضور"}, {"name": "محمود حمادة محمد فاخر", "role": "موظف مخزن", "shift": "صباحي", "code": "164", "atte": "حضور"}, {"name": "مروان احمد عبد الحكيم", "role": "عامل", "shift": "صباحي", "code": "190", "atte": "حضور"}, {"name": "حازم محمد احمد", "role": "موظف مخزن", "shift": "صباحي", "code": "192", "atte": "حضور"}], "left": []}, "قسم الامن و المراقبه": {"active": [{"name": "احمد رمزي الجندي", "role": "امين مخزن", "shift": "ليلي", "code": "111", "atte": "حضور"}, {"name": "طارق محمد جاب الله", "role": "فرد امن مصنع", "shift": "ليلي", "code": "122", "atte": "حضور"}], "left": []}, "قسم الرنجه": {"active": [{"name": "مصطفي السيد احمد", "role": "شيف اول معمل", "shift": "صباحي", "code": "153", "atte": "حضور"}], "left": []}, "قسم الجوده": {"active": [{"name": "شكري عبداللطيف الكردي", "role": "ليدر جوده", "shift": "صباحي", "code": "203", "atte": "حضور"}], "left": []}}};
 
 const SHEET_ID = "15NeasovzgM3FsqjM_MiL20jPdyQmR8jpp12bGJFFflU";
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
-const SHIFT_WINDOWS = { "صباحي": [6,14], "بتوين": [14,22], "ليلي": [22,30] }; // 30 = 06:00 اليوم التالي
+const SHIFT_ORDER = ['صباحي', 'بتوين', 'ليلي'];
+const SHIFT_LABEL = { 'صباحي': '🌅 صباحي (6ص–2م)', 'بتوين': '🌆 بتوين (2م–10م)', 'ليلي': '🌙 ليلي (10م–6ص)' };
+const SHIFT_WINDOWS = { 'صباحي': [6,14], 'بتوين': [14,22], 'ليلي': [22,30] };
 
-let lastSyncTime = new Date(); // وقت آخر مزامنة ناجحة (اللقطة المُضمّنة فوق)
+let lastSyncTime = new Date();
 let currentBranch = Object.keys(BRANCH_DATA)[0];
-
-/* حمّل إعدادات المان باور المحفوظة من localStorage */
-function getRequired(branch, dept, defaultCount) {
-  try {
-    const saved = JSON.parse(localStorage.getItem('staffmap_required') || '{}');
-    return saved?.[branch]?.[dept] || buildDefaultCurve(defaultCount);
-  } catch(e) { return buildDefaultCurve(defaultCount); }
-}
-function buildDefaultCurve(rosterSize) {
-  // منحنى افتراضي: ذروة وقت الرشق (12-14 و18-21)، وأقل تواجد بالليل المتأخر
-  const curve = {};
-  for (let h = 0; h < 24; h++) {
-    let factor = 0.55;
-    if (h >= 8 && h <= 22) factor = 0.7;
-    if ((h >= 12 && h <= 14) || (h >= 18 && h <= 21)) factor = 0.9;
-    if (h >= 1 && h <= 5) factor = 0.35;
-    curve[h] = Math.max(1, Math.round(rosterSize * factor));
-  }
-  return curve;
-}
-function saveRequired(branch, dept, hour, value) {
-  const saved = JSON.parse(localStorage.getItem('staffmap_required') || '{}');
-  saved[branch] = saved[branch] || {};
-  saved[branch][dept] = saved[branch][dept] || buildDefaultCurve(0);
-  saved[branch][dept][hour] = value;
-  localStorage.setItem('staffmap_required', JSON.stringify(saved));
-}
 
 function onShiftNow(shift, minutesSinceMidnight) {
   const range = SHIFT_WINDOWS[shift] || SHIFT_WINDOWS['صباحي'];
@@ -251,40 +273,6 @@ function onShiftNow(shift, minutesSinceMidnight) {
   if (e <= 24) return hour >= s && hour < e;
   return hour >= s || hour < (e - 24);
 }
-
-/* =========================================================
-   حالة كل موظف عند الضغط عليه: منضبط / غياب / تأخير / اجازة.
-   الوضع التلقائي مبني على atte + هل هو في شيفته دلوقتي.
-   المدير يقدر يظبط الحالة يدويًا (تأخير/اجازة) لو المصدر
-   التلقائي مش دقيق — بيتحفظ في localStorage بالكود.
-========================================================= */
-function getOverrides() {
-  try { return JSON.parse(localStorage.getItem('staffmap_overrides') || '{}'); }
-  catch(e) { return {}; }
-}
-function setOverrideFor(code, value) {
-  const o = getOverrides();
-  if (value) o[code] = value; else delete o[code];
-  localStorage.setItem('staffmap_overrides', JSON.stringify(o));
-}
-function computeStatus(emp, minutesSinceMidnight) {
-  const overrides = getOverrides();
-  if (overrides[emp.code]) return overrides[emp.code]; // غياب / تأخير / اجازة يدوي
-  const isOnShift = onShiftNow(emp.shift, minutesSinceMidnight);
-  if (!isOnShift) return 'خارج الشيفت';
-  return emp.atte === 'حضور' ? 'منضبط' : 'غياب';
-}
-function isBadStatus(status) { return status === 'غياب' || status === 'تأخير' || status === 'اجازة'; }
-
-/* =========================================================
-   سجل الشيفتات: بما إن مفيش سيرفر بيسجل تاريخ الحضور، الصفحة
-   نفسها بتسجل في localStorage آخر حالة معروفة لكل موظف وهو في
-   شيفته وانت فاتح الصفحة. كده لو فتحت بالليل تقدر تشوف اللي
-   حصل في شيفت الصباح (لو كانت الصفحة اتفتحت وقته ولو مرة).
-   الشيفت اللايف (الجاري دلوقتي) بيتعرض بالبيانات الحية مباشرة.
-========================================================= */
-const SHIFT_ORDER = ['صباحي', 'بتوين', 'ليلي'];
-const SHIFT_LABEL = { 'صباحي': '🌅 صباحي (6ص–2م)', 'بتوين': '🌆 بتوين (2م–10م)', 'ليلي': '🌙 ليلي (10م–6ص)' };
 function getActiveShiftName(now) {
   const h = now.getHours();
   if (h >= 6 && h < 14) return 'صباحي';
@@ -296,13 +284,11 @@ function getShiftDateKey(shiftName, now) {
   if (shiftName === 'ليلي' && d.getHours() < 6) d.setDate(d.getDate() - 1);
   return d.toISOString().slice(0, 10);
 }
-function shiftLogKey(shiftName, now) {
-  return `staffmap_shiftlog_${currentBranch}_${shiftName}_${getShiftDateKey(shiftName, now)}`;
-}
+function shiftLogKey(shiftName, now) { return `staffmap_shiftlog_${currentBranch}_${shiftName}_${getShiftDateKey(shiftName, now)}`; }
 function logCurrentShiftSnapshot(depts, minutesNow) {
   const now = new Date();
   Object.keys(depts).forEach(deptName => {
-    depts[deptName].forEach(e => {
+    depts[deptName].active.forEach(e => {
       if (!onShiftNow(e.shift, minutesNow)) return;
       const key = shiftLogKey(e.shift, now);
       const log = JSON.parse(localStorage.getItem(key) || '{}');
@@ -316,9 +302,31 @@ function getShiftLog(shiftName) {
   catch(e) { return {}; }
 }
 
+/* =========================================================
+   حالة كل موظف: منضبط / غياب / تأخير / اجازة — قابلة للتعديل
+   اليدوي (تأخير/اجازة) لو المصدر التلقائي مش دقيق.
+========================================================= */
+function getOverrides() {
+  try { return JSON.parse(localStorage.getItem('staffmap_overrides') || '{}'); }
+  catch(e) { return {}; }
+}
+function setOverrideFor(code, value) {
+  const o = getOverrides();
+  if (value) o[code] = value; else delete o[code];
+  localStorage.setItem('staffmap_overrides', JSON.stringify(o));
+}
+function computeStatus(emp, minutesSinceMidnight) {
+  const overrides = getOverrides();
+  if (overrides[emp.code]) return overrides[emp.code];
+  const isOnShift = onShiftNow(emp.shift, minutesSinceMidnight);
+  if (!isOnShift) return 'خارج الشيفت';
+  return emp.atte === 'حضور' ? 'منضبط' : 'غياب';
+}
+function isBadStatus(status) { return status === 'غياب' || status === 'تأخير' || status === 'اجازة'; }
+
 let currentEmpCode = null;
 function openEmpModal(code, deptName, branch) {
-  const emp = (BRANCH_DATA[branch]?.[deptName] || []).find(e => e.code === code);
+  const emp = (BRANCH_DATA[branch]?.[deptName]?.active || []).find(e => e.code === code);
   if (!emp) return;
   currentEmpCode = code;
   const now = new Date();
@@ -349,10 +357,67 @@ function setOverride(value) {
 }
 
 /* =========================================================
-   مزامنة حية: بيحاول يجيب أحدث نسخة من شيت جوجل مباشرة من
-   المتصفح (يحتاج مشاركة الشيت "Anyone with the link – Viewer").
-   لو فشل (مفيش صلاحية مشاركة عامة)، بيفضل شغال باللقطة
-   المُضمّنة في الملف وبيوضح إنها مش لايف تلقائي.
+   المان باور المطلوب لكل قسم — مُحدَّد لكل شيفت (مش لكل ساعة)،
+   القيمة الافتراضية = عدد الموظفين الفعليين المجدولين في
+   الشيفت ده حاليًا، وقابلة للتعديل من ⚙️ إعداد المان باور.
+========================================================= */
+function defaultShiftRequired(branch, dept, shiftName) {
+  const active = BRANCH_DATA[branch]?.[dept]?.active || [];
+  return active.filter(e => e.shift === shiftName).length;
+}
+function getShiftRequired(branch, dept, shiftName) {
+  try {
+    const saved = JSON.parse(localStorage.getItem('staffmap_shift_required') || '{}');
+    const v = saved?.[branch]?.[dept]?.[shiftName];
+    return v !== undefined ? v : defaultShiftRequired(branch, dept, shiftName);
+  } catch(e) { return defaultShiftRequired(branch, dept, shiftName); }
+}
+function saveShiftRequired(branch, dept, shiftName, value) {
+  const saved = JSON.parse(localStorage.getItem('staffmap_shift_required') || '{}');
+  saved[branch] = saved[branch] || {};
+  saved[branch][dept] = saved[branch][dept] || {};
+  saved[branch][dept][shiftName] = value;
+  localStorage.setItem('staffmap_shift_required', JSON.stringify(saved));
+}
+
+function openSettings() {
+  const depts = BRANCH_DATA[currentBranch] || {};
+  const body = document.getElementById('settingsBody');
+  body.innerHTML = Object.keys(depts).map(deptName => `
+    <div class="dept-setting">
+      <h4>${deptName}</h4>
+      <div class="shift-inputs">
+        ${SHIFT_ORDER.map(s => `
+          <div class="shift-input-box">
+            <label>${SHIFT_LABEL[s]}</label>
+            <input type="number" min="0" data-dept="${deptName}" data-shift="${s}" value="${getShiftRequired(currentBranch, deptName, s)}">
+          </div>`).join('')}
+      </div>
+      <div class="dept-roster-note">الروستر الحالي: ${depts[deptName].active.length} نشط${depts[deptName].left.length ? ` · ${depts[deptName].left.length} شاغر يحتاج توظيف` : ''}</div>
+    </div>`).join('');
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+function saveSettings() {
+  document.querySelectorAll('#settingsBody input').forEach(inp => {
+    saveShiftRequired(currentBranch, inp.dataset.dept, inp.dataset.shift, parseInt(inp.value,10) || 0);
+  });
+  closeSettings();
+  render();
+}
+
+/* شواغر التوظيف: موظفين "تصفية/ترك عمل" — دول بيحتاجوا بديل فعلي */
+function getVacancies(branch) {
+  const depts = BRANCH_DATA[branch] || {};
+  const list = [];
+  Object.keys(depts).forEach(deptName => {
+    (depts[deptName].left || []).forEach(e => list.push({ ...e, dept: deptName }));
+  });
+  return list;
+}
+
+/* =========================================================
+   مزامنة حية من شيت جوجل (يحتاج مشاركة الرابط - Viewer)
 ========================================================= */
 async function syncNow() {
   const btn = document.getElementById('syncBtn');
@@ -368,25 +433,25 @@ async function syncNow() {
     lastSyncTime = new Date();
     setBanner('ok', '✅ تمت المزامنة المباشرة مع شيت البصمة الساعة ' + lastSyncTime.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}));
   } catch (err) {
-    setBanner('warn', '⚠️ تعذّر الاتصال المباشر بالشيت من المتصفح (محتاج تفعيل "مشاركة الرابط – Viewer" على الشيت). البيانات المعروضة دلوقتي هي آخر لقطة اتزامنت الساعة ' + lastSyncTime.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}) + ' — أو اطلب مني أعمل مزامنة يدوية.');
+    setBanner('warn', '⚠️ تعذّر الاتصال المباشر بالشيت من المتصفح (محتاج تفعيل "مشاركة الرابط – Viewer" على الشيت). البيانات المعروضة دلوقتي هي آخر لقطة اتزامنت الساعة ' + lastSyncTime.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}));
   }
   btn.disabled = false;
-  btn.textContent = '🔄 مزامنة الآن';
+  btn.textContent = '🔄 مزامنة';
   render();
 }
-
 function parseCsvToBranchData(csvText) {
   const rows = csvText.split(/\r?\n/).map(parseCsvLine).filter(r => r.length > 1);
-  rows.shift(); // header
+  rows.shift();
   const shiftMap = { Morning: 'صباحي', Night: 'ليلي', Between: 'بتوين', Training: 'صباحي' };
   const out = {};
   rows.forEach(r => {
     const [code, name, hire, workstatus, shift, branch, empstatus, dept, role, atte] = r;
-    if (!name || name === '#N/A' || !branch || empstatus !== 'علي راس العمل') return;
-    const d = dept || 'غير محدد';
+    if (!name || name === '#N/A' || !branch || !dept) return;
     out[branch] = out[branch] || {};
-    out[branch][d] = out[branch][d] || [];
-    out[branch][d].push({ name: name.trim(), role: (role||'-').trim(), shift: shiftMap[shift] || shift || 'صباحي', code: (code||'').trim(), atte: (atte||'غياب').trim() });
+    out[branch][dept] = out[branch][dept] || { active: [], left: [] };
+    const entry = { name: name.trim(), role: (role||'-').trim(), shift: shiftMap[shift] || shift || 'صباحي', code: (code||'').trim(), atte: (atte||'غياب').trim() };
+    if (empstatus === 'علي راس العمل') out[branch][dept].active.push(entry);
+    else if (empstatus === 'تصفية' || empstatus === 'ترك عمل') { entry.leftReason = empstatus; out[branch][dept].left.push(entry); }
   });
   return out;
 }
@@ -437,7 +502,7 @@ function setView(v) {
 }
 setView('sim');
 
-let currentShiftFilter = null; // بيتحدد على شيفت اللايف أول مرة، وتقدر تبدّله من التبويبات
+let currentShiftFilter = null;
 function selectShift(s) { currentShiftFilter = s; render(); }
 function renderShiftTabs(now) {
   const activeShift = getActiveShiftName(now);
@@ -449,7 +514,6 @@ function renderShiftTabs(now) {
   }).join('');
 }
 
-/* شخصية/إيموجي تمثيلية حسب الوظيفة أو القسم — عشان يحس إنه شايف موظفين حقيقيين */
 function emojiFor(role, dept) {
   const t = role + ' ' + dept;
   const has = s => t.indexOf(s) !== -1;
@@ -466,8 +530,6 @@ function emojiFor(role, dept) {
   if (has('مدير') || has('ليدر') || has('هيد') || has('نائب')) return '🧑‍💼';
   return '🧑';
 }
-
-/* موقع ثابت (مش عشوائي) لكل موظف داخل القسم — واقف مكانه، مبيتحركش */
 function gridPos(i, total) {
   const cols = Math.max(2, Math.ceil(Math.sqrt(total)));
   const col = i % cols;
@@ -476,13 +538,13 @@ function gridPos(i, total) {
   return { left: 10 + col * cellW, top: 28 + row * 30 };
 }
 
-function renderFloorSim(viewDepts, isLiveShift) {
+function renderFloorSim(viewDepts) {
   const sim = document.getElementById('floorSim');
   sim.innerHTML = '';
   Object.keys(viewDepts).forEach(deptName => {
     const employees = viewDepts[deptName];
     const presentNow = employees.filter(e => e._status === 'منضبط').length;
-    const zoneHeight = Math.max(130, Math.min(280, 90 + employees.length * 20));
+    const zoneHeight = Math.max(140, Math.min(280, 95 + employees.length * 20));
     const zone = document.createElement('div');
     zone.className = 'sim-zone';
     zone.style.minHeight = zoneHeight + 'px';
@@ -511,18 +573,17 @@ function render() {
   const now = new Date();
   document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
   const minutesNow = now.getHours()*60 + now.getMinutes();
-  const hour = now.getHours();
   const activeShift = getActiveShiftName(now);
   if (!currentShiftFilter) currentShiftFilter = activeShift;
   const isLiveShift = currentShiftFilter === activeShift;
 
   const allDepts = BRANCH_DATA[currentBranch] || {};
-  logCurrentShiftSnapshot(allDepts, minutesNow); // يسجل شيفت اللايف الحقيقي بغض النظر عن التبويب المعروض
+  logCurrentShiftSnapshot(allDepts, minutesNow);
   const log = isLiveShift ? null : getShiftLog(currentShiftFilter);
 
   const viewDepts = {};
   Object.keys(allDepts).forEach(deptName => {
-    const emps = allDepts[deptName].filter(e => e.shift === currentShiftFilter);
+    const emps = allDepts[deptName].active.filter(e => e.shift === currentShiftFilter);
     if (emps.length === 0) return;
     viewDepts[deptName] = emps.map(e => {
       const status = isLiveShift ? computeStatus(e, minutesNow) : ((log[e.code] && log[e.code].status) || 'غير مسجل');
@@ -543,25 +604,22 @@ function render() {
     const presentNow = employees.filter(e => e._status === 'منضبط').length;
     totalPresent += presentNow;
 
-    let reqNow = null, short = false;
-    if (isLiveShift) {
-      const required = getRequired(currentBranch, deptName, allDepts[deptName].length);
-      reqNow = required[hour] ?? Math.max(1, Math.round(allDepts[deptName].length * 0.6));
-      totalRequired += reqNow;
-      short = presentNow < reqNow;
-      if (short) alerts.push({ title: `${deptName}: نقص موظفين`, detail: `الحاضر الآن ${presentNow} من أصل ${reqNow} مطلوبين في الساعة ${hour}:00` });
-    }
+    const reqNow = getShiftRequired(currentBranch, deptName, currentShiftFilter);
+    totalRequired += reqNow;
+    const short = presentNow < reqNow;
+    if (short) alerts.push({ title: `${deptName}: نقص موظفين`, detail: `${isLiveShift?'الحاضر الآن':'كان حاضر'} ${presentNow} من أصل ${reqNow} مطلوبين (${SHIFT_LABEL[currentShiftFilter]})`, kind: 'shortage' });
+
     employees.forEach(e => {
-      if (isBadStatus(e._status)) alerts.push({ title: `${deptName}: ${e.name} — ${e._status}`, detail: `${e.role} — كود ${e.code}` });
+      if (isBadStatus(e._status)) alerts.push({ title: `${deptName}: ${e.name} — ${e._status}`, detail: `${e.role} — كود ${e.code}`, kind: 'absence' });
     });
 
     const card = document.createElement('div');
     card.className = 'dept-card' + (short ? ' shortage' : '');
     card.innerHTML = `
       <div class="dept-head">
-        <div class="dept-name">${deptName}</div>
+        <div class="dept-name">${emojiFor('', deptName)} ${deptName}</div>
         <div class="dept-count ${short?'short':''}">
-          <span class="present">${presentNow}</span> / ${isLiveShift ? `<input type="number" class="req-edit" min="0" value="${reqNow}" data-dept="${deptName}">` : `<b>${employees.length}</b>`}
+          <span class="present">${presentNow}</span> / <span class="req">${reqNow}</span>
         </div>
       </div>
       <div class="positions">
@@ -587,33 +645,98 @@ function render() {
     floor.appendChild(card);
   });
 
-  floor.querySelectorAll('.req-edit').forEach(inp => {
-    inp.addEventListener('change', () => {
-      saveRequired(currentBranch, inp.dataset.dept, hour, parseInt(inp.value,10) || 0);
-      render();
-    });
-  });
+  renderFloorSim(viewDepts);
 
-  renderFloorSim(viewDepts, isLiveShift);
+  const vacancies = getVacancies(currentBranch);
 
   document.getElementById('statPresentLabel').textContent = isLiveShift ? 'حاضر الآن' : 'كان حاضر';
-  document.getElementById('statRequiredLabel').textContent = isLiveShift ? 'المطلوب الآن' : 'إجمالي روستر الشيفت';
-  document.getElementById('statAlertsLabel').textContent = 'تنبيهات';
+  document.getElementById('statRequiredLabel').textContent = 'المطلوب';
   document.getElementById('statPresent').textContent = totalPresent;
-  document.getElementById('statRequired').textContent = isLiveShift ? totalRequired : totalRoster;
+  document.getElementById('statRequired').textContent = totalRequired;
   document.getElementById('statRoster').textContent = totalRoster;
-  document.getElementById('statAlerts').textContent = alerts.length;
+  document.getElementById('statVacancies').textContent = vacancies.length;
+  document.getElementById('statAlerts').textContent = alerts.length + vacancies.length;
 
   const alertsList = document.getElementById('alertsList');
   const badgeEl = document.getElementById('alertCountBadge');
-  badgeEl.textContent = alerts.length || '';
-  badgeEl.style.display = alerts.length ? 'inline-block' : 'none';
-  alertsList.innerHTML = alerts.length === 0
-    ? `<div class="no-alerts"><div class="icon">✅</div>${isLiveShift ? 'كل الأقسام مغطاة حسب الخطة' : 'مفيش حالات غياب مسجلة في الشيفت ده'}</div>`
-    : alerts.map(a => `<div class="alert-item"><div class="t">${a.title}</div><div class="d">${a.detail}</div></div>`).join('');
+  const totalAlertCount = alerts.length + vacancies.length;
+  badgeEl.textContent = totalAlertCount || '';
+  badgeEl.style.display = totalAlertCount ? 'inline-block' : 'none';
+
+  let html = '';
+  if (alerts.length === 0 && vacancies.length === 0) {
+    html = `<div class="no-alerts"><div class="icon">✅</div>${isLiveShift ? 'كل الأقسام مغطاة حسب الخطة' : 'مفيش حالات غياب مسجلة في الشيفت ده'}</div>`;
+  } else {
+    if (alerts.length) {
+      html += `<div class="alerts-section-title">تنبيهات ${SHIFT_LABEL[currentShiftFilter]}</div>`;
+      html += alerts.map(a => `<div class="alert-item"><div class="t">${a.title}</div><div class="d">${a.detail}</div></div>`).join('');
+    }
+    if (vacancies.length) {
+      html += `<div class="alerts-section-title">🧑‍💼 شواغر تحتاج توظيف (${vacancies.length})</div>`;
+      html += vacancies.map(v => `<div class="alert-item vacancy"><div class="t">${v.dept}: محتاج بديل لـ ${v.name}</div><div class="d">كان ${v.role} — السبب: ${v.leftReason}</div></div>`).join('');
+    }
+  }
+  alertsList.innerHTML = html;
 }
 
-setBanner('warn', 'البيانات المعروضة هي آخر لقطة اتزامنت — اضغط "🔄 مزامنة الآن" لتحديثها مباشرة من الشيت (يحتاج تفعيل مشاركة الرابط).');
+/* =========================================================
+   تقرير الطباعة / PDF
+========================================================= */
+function printReport() {
+  const now = new Date();
+  const allDepts = BRANCH_DATA[currentBranch] || {};
+  const vacancies = getVacancies(currentBranch);
+  const vacancyDepts = new Set(vacancies.map(v => v.dept));
+
+  let rows = '';
+  Object.keys(allDepts).forEach(deptName => {
+    const active = allDepts[deptName].active;
+    const reqRow = SHIFT_ORDER.map(s => getShiftRequired(currentBranch, deptName, s));
+    const presentRow = SHIFT_ORDER.map(s => active.filter(e => e.shift === s && e.atte === 'حضور').length);
+    const deptVacancies = vacancies.filter(v => v.dept === deptName).length;
+    const totalReq = reqRow.reduce((a,b)=>a+b,0);
+    const totalPresent = presentRow.reduce((a,b)=>a+b,0);
+    let recClass = 'pr-rec-ok', recText = '✅ مكتمل';
+    if (deptVacancies > 0) { recClass = 'pr-rec-hire'; recText = `🔴 محتاج توظيف (${deptVacancies})`; }
+    else if (totalPresent < totalReq) { recClass = 'pr-rec-watch'; recText = '🟡 نقص مؤقت - متابعة غياب'; }
+    rows += `<tr>
+      <td class="dept-name-cell">${deptName}</td>
+      <td>${reqRow[0]}</td><td>${reqRow[1]}</td><td>${reqRow[2]}</td>
+      <td>${presentRow[0]}</td><td>${presentRow[1]}</td><td>${presentRow[2]}</td>
+      <td class="${recClass}">${recText}</td>
+    </tr>`;
+  });
+
+  let vacancyHtml = '';
+  if (vacancies.length) {
+    vacancyHtml = `<h3 style="margin-bottom:8px;">🔴 قائمة الشواغر اللي محتاجة توظيف بديل</h3><ul class="pr-vacancy-list">` +
+      vacancies.map(v => `<li><b>${v.dept}</b> — ${v.name} (${v.role}) — السبب: ${v.leftReason}</li>`).join('') +
+      `</ul>`;
+  }
+
+  document.getElementById('printReport').innerHTML = `
+    <div class="pr-head">
+      <h1>تقرير المان باور — ${currentBranch}</h1>
+      <div class="meta">تاريخ الطباعة: ${now.toLocaleDateString('ar-EG')} — ${now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+    <table class="pr-table">
+      <thead>
+        <tr>
+          <th rowspan="2">القسم</th>
+          <th colspan="3">المطلوب</th>
+          <th colspan="3">المتاح فعليًا الآن</th>
+          <th rowspan="2">التوصية</th>
+        </tr>
+        <tr><th>صباحي</th><th>بتوين</th><th>ليلي</th><th>صباحي</th><th>بتوين</th><th>ليلي</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    ${vacancyHtml}
+  `;
+  setTimeout(() => window.print(), 100);
+}
+
+setBanner('warn', 'البيانات المعروضة هي آخر لقطة اتزامنت — اضغط "🔄 مزامنة" لتحديثها مباشرة من الشيت (يحتاج تفعيل مشاركة الرابط).');
 setInterval(render, 15000);
 render();
 </script>
