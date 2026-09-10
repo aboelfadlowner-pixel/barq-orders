@@ -1,0 +1,68 @@
+/* منقول من barcode-print.html — الأنماط الخاصة بموديول "باركود وطباعة" فقط
+   (نفس :root المشترك موجود بالفعل في shared.css، هنا فقط الفئات الخاصة بالأداة، ومقيّدة بـ .bc-mod) */
+
+.bc-mod { font-size: 14px; padding-bottom: 40px; }
+.bc-mod button, .bc-mod input, .bc-mod select, .bc-mod textarea { font-family: 'Cairo', sans-serif; }
+
+.bc-mod .wrap { max-width: 960px; margin: 0 auto; padding: 0; }
+.bc-mod .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.bc-mod .card h2 { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.bc-mod .card .sub { font-size: 11px; color: var(--muted); margin-top: -8px; margin-bottom: 12px; }
+
+.bc-mod .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.bc-mod .field { flex: 1; min-width: 140px; }
+.bc-mod .field label { display: block; font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+.bc-mod .field input, .bc-mod .field select { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; background: #fafffb; }
+.bc-mod .field input:focus, .bc-mod .field select:focus { outline: none; border-color: var(--accent); }
+.bc-mod .field input[readonly] { background: #f0f4f1; color: var(--muted); }
+
+.bc-mod .btn { padding: 11px 18px; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; transition: .15s; }
+.bc-mod .btn-primary { background: var(--accent); color: #fff; }
+.bc-mod .btn-primary:hover { background: #246e45; }
+.bc-mod .btn-ghost { background: #fff; border: 2px solid var(--border); color: var(--text); }
+.bc-mod .btn-ghost:hover { border-color: var(--accent); }
+.bc-mod .btn-danger { background: #fff; border: 2px solid var(--red); color: var(--red); }
+.bc-mod .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.bc-mod .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.bc-mod .import-box { border: 2px dashed var(--border); border-radius: 10px; padding: 14px; text-align: center; color: var(--muted); font-size: 12px; cursor: pointer; }
+.bc-mod .import-box:hover { border-color: var(--accent); background: #f0f9f4; }
+.bc-mod .master-status { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f0f9f4; border: 1px solid var(--border); border-radius: 10px; font-size: 12px; margin-bottom: 12px; }
+.bc-mod .master-status.empty { background: #fff8f0; color: var(--muted); }
+.bc-mod .master-status b { color: var(--primary); }
+
+.bc-mod .search-wrap { position: relative; }
+.bc-mod .search-results { border: 1px solid var(--border); border-radius: 10px; margin-top: 4px; max-height: 260px; overflow-y: auto; background: #fff; }
+.bc-mod .search-results .sr-item { padding: 9px 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+.bc-mod .search-results .sr-item:last-child { border-bottom: none; }
+.bc-mod .search-results .sr-item:hover { background: #f0f9f4; }
+.bc-mod .search-results .sr-name { font-weight: 700; }
+.bc-mod .search-results .sr-meta { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.bc-mod .search-hint { font-size: 12px; color: var(--muted); padding: 8px 2px; }
+
+.bc-mod .sel-panel { border: 2px solid var(--accent); border-radius: 12px; padding: 14px; margin-top: 10px; background: #f7fcf9; }
+.bc-mod .sel-panel .sel-name { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+
+.bc-mod .manual-toggle { background: none; border: none; color: var(--blue); font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 4px 0; }
+
+.bc-mod .preview-wrap { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+.bc-mod .label-preview { background: #fff; border: 1px solid #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; overflow: hidden; }
+.bc-mod .label-preview .lp-logo { height: 22px; width: auto; margin-bottom: 2px; }
+.bc-mod .label-preview .lp-name { font-size: 20px; font-weight: 800; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.bc-mod .label-preview .lp-date { font-size: 9px; color: #555; }
+.bc-mod .label-preview .lp-price { font-size: 34px; font-weight: 900; color: var(--primary); }
+.bc-mod .label-preview svg { max-width: 65%; }
+
+.bc-mod table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bc-mod th { background: #f0f7f2; padding: 8px; text-align: right; color: var(--muted); font-weight: 700; border-bottom: 2px solid var(--border); }
+.bc-mod td { padding: 8px; border-bottom: 1px solid var(--border); }
+.bc-mod td input { width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; text-align: center; }
+.bc-mod td input[type="date"] { width: 120px; }
+.bc-mod .qty-input { width: 60px !important; }
+.bc-mod .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; }
+.bc-mod .empty-hint { text-align: center; color: var(--muted); padding: 20px; font-size: 13px; }
+
+.bc-mod .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; z-index: 999; opacity: 0; transition: .25s; pointer-events: none; }
+.bc-mod .toast.show { opacity: 1; }
+
+@media (max-width: 600px) { .bc-mod .row { flex-direction: column; } }

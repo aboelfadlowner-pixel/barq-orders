@@ -1,0 +1,334 @@
+/* منقول من masna3.html — أنماط موديول "المصنع" فقط.
+   ملاحظة: ألوان هذا الملف (--primary:#071310 وغيرها) مختلفة عن دايالكت
+   shared.css، فاتحفظت هنا كمتغيرات مقيّدة بـ .msn-mod (مش :root عام)
+   عشان متأثرش على باقي الموديولات. */
+
+.msn-mod {
+      /* موحّدة مع نفس ألوان shared.css — --accent هنا معناها "لون النص فوق
+         الخلفية الغامقة" (أبيض) مش لون العلامة الثانوي، فسايبينها زي ما هي */
+      --primary: #071310;
+      --primary-dark: #040a08;
+      --primary-light: #12c77a;
+      --accent: #fff;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --border: #d4e4d8;
+      --text: #071310;
+      --muted: #6b8f71;
+      --danger: #c0392b;
+      --warning: #e67e22;
+      --success: #12c77a;
+      --gold: #d4ac0d;
+    }
+.msn-mod * { box-sizing: border-box; margin: 0; padding: 0; }
+.msn-mod, .msn-mod {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overscroll-behavior: none;
+      direction: rtl;
+    }
+.msn-mod #login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(160deg, #040a08 0%, #071310 50%, #2d8a42 100%);
+    }
+.msn-mod .login-box {
+      background: #fff; border-radius: 24px; padding: 44px 40px;
+      width: 360px; box-shadow: 0 24px 64px rgba(0,0,0,0.3); text-align: center;
+    }
+.msn-mod .login-logo-svg { width: 100px; height: 100px; margin: 0 auto 12px; }
+.msn-mod .login-brand { font-size: 22px; font-weight: 900; color: var(--primary-dark); }
+.msn-mod .login-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; margin-top: 4px; }
+.msn-mod .login-input {
+      width: 100%; padding: 12px 16px;
+      border: 2px solid var(--border); border-radius: 10px;
+      font-family: 'Cairo', sans-serif; font-size: 15px;
+      margin-bottom: 10px; text-align: right; direction: rtl;
+      transition: border-color 0.2s; color: var(--text);
+    }
+.msn-mod .login-input:focus { outline: none; border-color: var(--primary); }
+.msn-mod .login-btn {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #071310, #2d8a42); color: #fff;
+      border: none; border-radius: 10px;
+      font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 700;
+      cursor: pointer; margin-top: 6px;
+      box-shadow: 0 4px 12px rgba(26,92,42,0.3);
+    }
+.msn-mod .login-btn:hover { background: linear-gradient(135deg, #040a08, #071310); }
+.msn-mod .login-err { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 20px; }
+.msn-mod #app-screen { display: none; min-height: 100vh; }
+.msn-mod .topbar {
+      background: linear-gradient(135deg, #040a08, #071310);
+      color: #fff; padding: 0 16px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+.msn-mod .topbar-brand {
+      display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 900;
+    }
+.msn-mod .topbar-logo-svg { width: 40px; height: 40px; }
+.msn-mod .topbar-right { display: flex; align-items: center; gap: 10px; }
+.msn-mod .topbar-date { font-size: 12px; opacity: 0.7; }
+.msn-mod .btn-logout {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; padding: 6px 14px; border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 13px; cursor: pointer;
+    }
+/* شريط الـ shell أصلاً بيعرض اسم القسم وهوية المستخدم وزرار الخروج — هنا بس التاريخ وزرار الإنتاج */
+.msn-mod .topbar--slim { background: var(--card); color: var(--text); box-shadow: none; border-bottom: 1px solid var(--border); justify-content: flex-end; height: auto; padding: 10px 16px; }
+.msn-mod .topbar--slim .topbar-date { color: var(--muted); }
+.msn-mod .topbar--slim .btn-logout { background: var(--accent-soft); color: var(--primary); border: 1px solid var(--border); }
+.msn-mod .upload-section { padding: 18px 16px 0; max-width: 940px; margin: 0 auto; }
+.msn-mod .upload-card {
+      background: var(--card); border-radius: 16px; padding: 28px;
+      border: 2px dashed var(--border); text-align: center; cursor: pointer;
+      transition: all 0.2s; margin-bottom: 14px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+.msn-mod .upload-card:hover, .msn-mod .upload-card.drag { border-color: var(--primary); background: #f0f9f2; }
+.msn-mod .upload-card input { display: none; }
+.msn-mod .upload-icon { font-size: 40px; }
+.msn-mod .upload-text { font-size: 16px; font-weight: 700; color: var(--primary-dark); }
+.msn-mod .upload-sub { font-size: 13px; color: var(--muted); }
+.msn-mod .order-meta {
+      background: var(--card); border-radius: 12px; padding: 12px 18px;
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      margin-bottom: 14px; border: 1px solid var(--border);
+    }
+.msn-mod .meta-item { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.msn-mod .meta-label { color: var(--muted); }
+.msn-mod .meta-val { font-weight: 700; color: var(--primary-dark); }
+.msn-mod .badge { background: var(--primary); color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
+.msn-mod .meta-actions { display: flex; gap: 8px; margin-right: auto; flex-wrap: wrap; }
+.msn-mod .btn-meta {
+      border: none; padding: 7px 14px; border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+.msn-mod .btn-export-all { background: #196f3d; color: #fff; }
+.msn-mod .btn-export-missing { background: #d35400; color: #fff; }
+.msn-mod .btn-clear-order { background: #f8d7da; color: #721c24; }
+.msn-mod .dept-tabs {
+      display: flex; overflow-x: auto; gap: 8px;
+      padding: 0 16px 12px; max-width: 940px; margin: 0 auto;
+      scrollbar-width: none; direction: rtl;
+    }
+.msn-mod .dept-tabs::-webkit-scrollbar { display: none; }
+.msn-mod .dept-tab {
+      flex-shrink: 0; padding: 8px 16px; border-radius: 20px;
+      border: 2px solid var(--border); background: var(--card);
+      font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; color: var(--muted); transition: all 0.2s; white-space: nowrap;
+    }
+.msn-mod .dept-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.msn-mod .dept-tab .cnt {
+      background: var(--primary-light); color: #fff;
+      border-radius: 10px; padding: 1px 6px; font-size: 11px; margin-right: 4px;
+    }
+.msn-mod .dept-tab.active .cnt { background: rgba(255,255,255,0.25); }
+.msn-mod .dept-section { max-width: 940px; margin: 0 auto; padding: 0 16px 40px; }
+.msn-mod .dept-card {
+      background: var(--card); border-radius: 16px;
+      border: 1px solid var(--border); overflow: hidden;
+    }
+.msn-mod .dept-header {
+      background: linear-gradient(135deg, #040a08, #071310);
+      color: #fff; padding: 13px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+.msn-mod .dept-header-title { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.msn-mod .dept-sub { opacity: 0.6; font-size: 12px; font-weight: 400; margin-right: 4px; }
+.msn-mod .dept-actions { display: flex; gap: 8px; }
+.msn-mod .btn-add-row {
+      background: rgba(255,255,255,0.15); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3); padding: 6px 12px;
+      border-radius: 8px; font-family: 'Cairo', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+.msn-mod .btn-print-dept {
+      background: var(--gold); color: #fff; border: none;
+      padding: 6px 14px; border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+.msn-mod .btn-move-dept {
+      background: #071310; color: #fff; border: none;
+      padding: 6px 14px; border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+.msn-mod .order-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.msn-mod .order-table th {
+      background: #f0f9f2; padding: 10px 12px; text-align: right;
+      font-weight: 700; color: var(--muted);
+      border-bottom: 2px solid var(--border); font-size: 12px;
+    }
+.msn-mod .order-table td { padding: 9px 12px; border-bottom: 1px solid #f0f5f1; vertical-align: middle; }
+.msn-mod .order-table tr:last-child td { border-bottom: none; }
+.msn-mod .order-table tr:hover td { background: #f7fdf8; }
+.msn-mod .col-num { width: 36px; color: var(--muted); text-align: center; font-size: 12px; }
+.msn-mod .col-sku { width: 110px; font-size: 11px; color: var(--muted); font-family: monospace; }
+.msn-mod .col-name { font-weight: 600; }
+.msn-mod .col-unit { color: var(--muted); font-size: 12px; text-align: center; width: 65px; }
+.msn-mod .col-req { font-weight: 700; color: var(--primary); text-align: center; width: 85px; font-size: 15px; }
+.msn-mod .col-actual { text-align: center; width: 130px; }
+.msn-mod .col-ingredients { width: 100px; }
+.msn-mod .col-notes { }
+.msn-mod .col-del { text-align: center; width: 40px; }
+.msn-mod .actual-input {
+      width: 75px; padding: 6px 8px;
+      border: 2px solid var(--border); border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700;
+      text-align: center; transition: border-color 0.2s; background: #fff;
+    }
+.msn-mod .actual-input:focus { outline: none; border-color: var(--primary); }
+.msn-mod .actual-input.changed { border-color: var(--warning); background: #fef9f0; }
+.msn-mod .actual-input.zero { border-color: var(--danger); background: #fdf0ef; }
+.msn-mod .diff { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 5px; border-radius: 5px; margin-right: 3px; vertical-align: middle; }
+.msn-mod .diff-up { background: #d5f5e3; color: #196f3d; }
+.msn-mod .diff-dn { background: #fadbd8; color: #922b21; }
+.msn-mod .note-input {
+      width: 100%; padding: 6px 8px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 13px; background: #fff;
+    }
+.msn-mod .note-input:focus { outline: none; border-color: var(--primary); }
+.msn-mod .btn-del {
+      background: none; border: none; color: #ccc; cursor: pointer;
+      font-size: 18px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s;
+      font-weight: bold;
+    }
+.msn-mod .btn-del:hover { color: var(--danger); background: #fdf0ef; }
+.msn-mod .add-form {
+      padding: 12px 16px; background: #f0f9f2;
+      border-top: 1px solid var(--border);
+      display: none; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+.msn-mod .add-form.open { display: flex; }
+.msn-mod .add-input {
+      padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Cairo', sans-serif; font-size: 14px; background: #fff;
+    }
+.msn-mod .add-input:focus { outline: none; border-color: var(--primary); }
+.msn-mod .btn-confirm { background: var(--success); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+.msn-mod .btn-cancel-add { background: #eee; color: var(--muted); border: none; padding: 8px 12px; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; cursor: pointer; }
+.msn-mod .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.msn-mod .empty-state .icon { font-size: 54px; margin-bottom: 12px; }
+.msn-mod .empty-state h3 { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 6px; }
+.msn-mod #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--primary-dark); color: #fff;
+      padding: 12px 24px; border-radius: 12px;
+      font-size: 14px; font-weight: 600; z-index: 9999;
+      transition: transform 0.3s; white-space: nowrap;
+    }
+.msn-mod #toast.show { transform: translateX(-50%) translateY(0); }
+@page { size: A4; margin: 5mm 7mm; }
+@media print {
+.msn-mod * { box-sizing: border-box; }
+.msn-mod, .msn-mod { margin: 0; padding: 0; background: #fff; }
+.msn-mod { font-size: 11pt; line-height: 1.4; }
+.msn-mod #login-screen, .msn-mod .topbar, .msn-mod .upload-section, .msn-mod .dept-tabs, .msn-mod .btn-print-dept, .msn-mod .btn-add-row, .msn-mod .btn-del, .msn-mod .add-form, .msn-mod .meta-actions, .msn-mod .actual-input, .msn-mod .note-input, .msn-mod #toast, .msn-mod .diff, .msn-mod .col-del { display: none !important; }
+.msn-mod .dept-section { padding: 0 !important; max-width: 100% !important; }
+.msn-mod .dept-card { display: none !important; page-break-after: always; }
+.msn-mod .dept-card.printing { display: block !important; page-break-after: always; }
+.msn-mod .dept-card + .dept-card.printing { page-break-before: avoid; }
+.msn-mod .dept-header { background: #071310 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.msn-mod .dept-header, .msn-mod .order-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.msn-mod .print-header { display: block !important; text-align: center; padding: 6px 0 10px; border-bottom: 2px solid #071310; margin-bottom: 10px; }
+.msn-mod .print-actual { display: table-cell !important; font-weight: 700; text-align: center; }
+.msn-mod .print-note-cell { display: table-cell !important; }
+.msn-mod .p-actual { display: inline !important; font-weight: 700; }
+.msn-mod .p-note { display: inline !important; }
+.msn-mod .order-table { font-size: 10pt; }
+.msn-mod .order-table th, .msn-mod .order-table td { padding: 3px 6px; font-size: 9.5pt; }
+.msn-mod .col-actual { width: 100px !important; }
+.msn-mod tr { page-break-inside: avoid; }
+}
+.msn-mod .print-header { display: none; }
+.msn-mod .print-actual { display: none; }
+.msn-mod .print-note-cell { display: none; }
+.msn-mod .p-actual { display: none; }
+.msn-mod .p-note { display: none; }
+.msn-mod .incoming-btn {
+      background: #e94560; color: #fff; border: none;
+      border-radius: 10px; padding: 10px 16px; font-family: 'Cairo',sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer; margin: 12px 16px 0;
+      display: flex; align-items: center; gap: 8px; width: calc(100% - 32px);
+      max-width: 908px; margin-left: auto; margin-right: auto;
+      justify-content: center;
+    }
+.msn-mod .incoming-btn:hover { background: #c53030; }
+.msn-mod .incoming-panel {
+      display: none; max-width: 940px; margin: 12px auto; padding: 0 16px;
+    }
+.msn-mod .incoming-panel.open { display: block; }
+.msn-mod .prod-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 998; opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+.msn-mod .prod-overlay.open { opacity: 1; pointer-events: auto; }
+.msn-mod .prod-drawer {
+      position: fixed; top: 0; right: 0; height: 100vh; width: min(440px, 92vw);
+      background: #f4f7f5; z-index: 999; box-shadow: -6px 0 24px rgba(0,0,0,0.2);
+      transform: translateX(100%); transition: transform .28s ease;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+.msn-mod .prod-drawer.open { transform: translateX(0); }
+.msn-mod .prod-drawer-body { flex: 1; overflow-y: auto; padding: 0 12px 24px; -webkit-overflow-scrolling: touch; }
+.msn-mod .prod-drawer-header {
+      background: #0a5c33; color: #fff; padding: 14px 16px; display: flex;
+      justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+.msn-mod .prod-drawer-close { background: rgba(255,255,255,.15); border: none; color: #fff; border-radius: 8px; padding: 6px 12px; font-family: Cairo; font-size: 13px; cursor: pointer; }
+.msn-mod .incoming-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+.msn-mod .incoming-title { font-size: 16px; font-weight: 800; color: var(--primary); }
+.msn-mod .incoming-refresh {
+      background: var(--primary); color: #fff; border: none;
+      border-radius: 8px; padding: 8px 12px; font-family: 'Cairo',sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer; min-width: 42px;
+    }
+.msn-mod .incoming-refresh:hover { opacity: 0.85; }
+.msn-mod .order-card {
+      background: #fff; border-radius: 12px; padding: 14px;
+      margin-bottom: 12px; border-right: 4px solid #e94560;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+.msn-mod .order-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+.msn-mod .order-branch { font-size: 15px; font-weight: 800; color: var(--primary); }
+.msn-mod .order-time { font-size: 12px; color: var(--muted); }
+.msn-mod .order-status {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+    }
+.msn-mod .status-pending { background: #fef3c7; color: #92400e; }
+.msn-mod .status-received { background: #d1fae5; color: #065f46; }
+.msn-mod .status-done { background: #e0e7ff; color: #3730a3; }
+.msn-mod .order-items-list { font-size: 13px; color: var(--muted); margin: 6px 0; }
+.msn-mod .order-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.msn-mod .btn-load-order {
+      background: var(--primary); color: #fff; border: none;
+      border-radius: 8px; padding: 8px 14px; font-family: 'Cairo',sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+.msn-mod .btn-status-update {
+      background: #196f3d; color: #fff; border: none;
+      border-radius: 8px; padding: 8px 14px; font-family: 'Cairo',sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+.msn-mod .incoming-empty {
+      text-align: center; padding: 30px; color: var(--muted);
+      font-size: 15px;
+    }
+.msn-mod .incoming-badge {
+      background: #fff; color: #e94560; border-radius: 50px;
+      padding: 2px 8px; font-size: 12px; font-weight: 800;
+    }

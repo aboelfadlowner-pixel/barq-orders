@@ -1,0 +1,50 @@
+/* موديول "بلاغات المستخدمين" — نفس متغيرات shared.css، مفيش ألوان جديدة */
+
+.sup-mod { max-width: 860px; }
+
+.sup-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.sup-header h2 { font-size: 19px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.sup-header .sup-sub { font-size: 12.5px; color: var(--muted); max-width: 480px; }
+
+.sup-filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.sup-filter {
+  padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text); font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.sup-filter.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.sup-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow);
+  border-right: 4px solid var(--accent2);
+}
+.sup-card.sup-done { border-right-color: var(--accent); opacity: .75; }
+
+.sup-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.sup-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sup-user { font-weight: 800; font-size: 13.5px; color: var(--primary); }
+.sup-role, .sup-branch, .sup-section {
+  font-size: 11.5px; color: var(--muted); background: var(--bg); border: 1px solid var(--border);
+  border-radius: 14px; padding: 2px 9px;
+}
+.sup-time { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+
+.sup-msg { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 10px; white-space: pre-wrap; }
+
+.sup-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sup-btn {
+  padding: 7px 14px; border-radius: 9px; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text); font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.sup-btn:hover { border-color: var(--accent); }
+.sup-btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.sup-btn-primary:hover { background: var(--primary); border-color: var(--primary); }
+.sup-btn-danger { color: var(--red); border-color: var(--red); }
+.sup-btn-danger:hover { background: var(--red); color: #fff; }
+.sup-done-label { font-size: 12.5px; font-weight: 700; color: var(--accent); }
+
+.sup-empty { text-align: center; color: var(--muted); padding: 40px 20px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+.sup-error { color: var(--red); }

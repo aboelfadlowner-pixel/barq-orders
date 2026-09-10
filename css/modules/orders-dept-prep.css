@@ -1,0 +1,57 @@
+/* منقول من masna3-dept.html — أنماط موديول "تحضير الأقسام" فقط، مقيّدة بـ .dept-mod */
+
+.dept-mod * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+.dept-mod { margin:0; font-family:'Cairo',-apple-system,sans-serif; background:#f4f7f5; color:#071310; }
+.dept-mod 600;700;800&display=swap');
+
+  .screen { min-height:100vh; display:flex; flex-direction:column; }
+.dept-mod .login-wrap { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:24px; }
+.dept-mod .login-card { width:100%; max-width:380px; background:#fff; border-radius:18px; padding:28px 22px; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+.dept-mod .login-title { font-size:20px; font-weight:800; text-align:center; margin-bottom:4px; color:#071310; }
+.dept-mod .login-sub { font-size:13px; text-align:center; color:#789; margin-bottom:22px; }
+.dept-mod .dept-btn { width:100%; display:block; padding:16px; margin-bottom:10px; border:2px solid #e3ede6; border-radius:14px; background:#fafcfb; font-size:17px; font-weight:700; color:#071310; text-align:center; cursor:pointer; }
+.dept-mod .dept-btn.active { border-color:#12c77a; background:#eafcf1; color:#071310; }
+.dept-mod .pass-input { width:100%; padding:16px; font-size:22px; letter-spacing:6px; text-align:center; border:2px solid #e3ede6; border-radius:14px; margin-top:14px; }
+.dept-mod .login-go { width:100%; margin-top:14px; padding:16px; border:none; border-radius:14px; background:#12c77a; color:#fff; font-size:18px; font-weight:800; cursor:pointer; }
+.dept-mod .login-go:disabled { background:#c9d6ce; }
+.dept-mod .login-err { color:#c0392b; font-size:14px; text-align:center; margin-top:10px; min-height:18px; }
+.dept-mod .topbar { background:#071310; color:#fff; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10; }
+.dept-mod .topbar .dept-name { font-size:18px; font-weight:800; }
+.dept-mod .topbar .logout { font-size:13px; opacity:.85; background:none; border:1px solid rgba(255,255,255,.5); color:#fff; padding:6px 12px; border-radius:20px; }
+/* شريط رفيع بديل — يظهر بس لليوزر العام (deptprep) عشان يقدر يرجع لاختيار قسم تاني.
+   اليوزرات المستقلة (dept-vip/...) شايفين عنوان القسم وزرار الخروج من شريط الـ shell نفسه، فمالهومش داعي للشريط ده أصلاً */
+.dept-mod .topbar--slim { background:transparent; color:#071310; padding:10px 16px 0; justify-content:flex-end; position:static; box-shadow:none; }
+.dept-mod .topbar--slim .change-dept { font-size:13px; font-weight:700; background:#eafcf1; border:1px solid #cfe8d9; color:#071310; padding:6px 14px; border-radius:20px; cursor:pointer; }
+.dept-mod .status-line { padding:8px 16px; font-size:12px; color:#789; background:#eef4f0; display:flex; justify-content:space-between; }
+.dept-mod .empty { text-align:center; padding:60px 20px; color:#9ab; font-size:16px; }
+.dept-mod .branch-block { margin:14px 12px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+.dept-mod .branch-head { background:#12c77a; color:#fff; padding:12px 16px; font-size:16px; font-weight:800; display:flex; justify-content:space-between; }
+.dept-mod .branch-head .cnt { font-size:12px; font-weight:600; opacity:.9; }
+.dept-mod .item-row { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #f0f5f1; gap:10px; }
+.dept-mod .item-row:last-child { border-bottom:none; }
+.dept-mod .item-info { flex:1; min-width:0; }
+.dept-mod .item-name { font-size:16px; font-weight:700; color:#071310; }
+.dept-mod .item-qty { font-size:14px; color:#567; margin-top:2px; }
+.dept-mod .item-meta { font-size:11px; color:#9ab; margin-top:3px; }
+.dept-mod .status-btns { display:flex; flex-direction:column; gap:6px; flex-shrink:0; }
+.dept-mod .status-btn { padding:10px 14px; border-radius:12px; font-size:13px; font-weight:800; border:none; min-width:110px; text-align:center; }
+.dept-mod .status-btn.pending { background:#fff3d6; color:#a86a00; border:2px solid #ffdf9e; }
+.dept-mod .status-btn.done { background:#e3f7e9; color:#12c77a; border:2px solid #b6ecc9; }
+.dept-mod .status-btn.shortage-btn { background:#fdeaea; color:#c0392b; border:2px solid #f6c6c2; }
+.dept-mod .status-btn.shortage-done { background:#f6dede; color:#a13a2e; border:2px solid #ecbcb6; }
+.dept-mod .subtabs { display:flex; gap:8px; padding:10px 12px 0; }
+.dept-mod .subtab-btn { flex:1; padding:10px; border-radius:12px 12px 0 0; border:none; font-size:14px; font-weight:800; background:#e3ede6; color:#5a7a68; }
+.dept-mod .subtab-btn.active { background:#fff; color:#071310; }
+.dept-mod .branch-tabs { display:flex; gap:8px; overflow-x:auto; padding:10px 12px; background:#fff; }
+.dept-mod .branch-tab { flex-shrink:0; padding:10px 16px; border-radius:20px; border:2px solid #e3ede6; background:#fafcfb; font-size:14px; font-weight:700; color:#071310; white-space:nowrap; }
+.dept-mod .branch-tab.active { background:#12c77a; border-color:#12c77a; color:#fff; }
+.dept-mod .branch-tab .badge { background:rgba(0,0,0,.15); border-radius:10px; padding:1px 7px; font-size:11px; margin-right:5px; }
+.dept-mod .branch-tab.active .badge { background:rgba(255,255,255,.3); }
+.dept-mod .shortage-note { font-size:11px; color:#c0392b; margin-top:3px; }
+.dept-mod .mgr-link { margin-top:18px; font-size:12px; color:#aab; text-align:center; text-decoration:underline; cursor:pointer; }
+.dept-mod .mgr-row { padding:12px 16px; border-bottom:1px solid #f0f5f1; }
+.dept-mod .mgr-row .mgr-top { display:flex; justify-content:space-between; font-size:13px; color:#789; }
+.dept-mod .mgr-row .mgr-name { font-size:15px; font-weight:700; color:#071310; margin-top:2px; }
+.dept-mod .mgr-row .mgr-note { font-size:12px; color:#c0392b; margin-top:2px; }
+.dept-mod .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#071310; color:#fff; padding:12px 22px; border-radius:30px; font-size:14px; z-index:100; opacity:0; transition:opacity .25s; pointer-events:none; }
+.dept-mod .toast.show { opacity:1; }

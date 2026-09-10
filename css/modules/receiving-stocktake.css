@@ -1,0 +1,139 @@
+/* منقول من istilam-w-gerd.html — أنماط موديول "استلامات/جرد" فقط.
+   نفس :root المشترك موجود بالفعل في shared.css (قيم مطابقة تمامًا)، مُسقطة هنا،
+   والباقي مقيّد بـ .ist-mod. */
+
+.ist-mod button, .ist-mod input, .ist-mod select, .ist-mod textarea {font-family:'Cairo',sans-serif}
+.ist-mod .auth-wrap {min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary),var(--accent));padding:20px}
+.ist-mod .auth-card {background:#fff;border-radius:20px;padding:30px 26px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.ist-mod .auth-title-en {font-size:20px;font-weight:900;color:var(--primary);letter-spacing:.5px;font-family:Arial,Helvetica,sans-serif}
+.ist-mod .auth-logo {font-size:40px;margin:4px 0 0}
+.ist-mod .auth-brand {font-size:24px;font-weight:900;color:var(--accent);margin-bottom:2px}
+.ist-mod .auth-sub {font-size:13px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:20px}
+.ist-mod .auth-footer {font-size:10px;color:var(--muted);margin-top:18px;border-top:1px solid var(--border);padding-top:10px}
+.ist-mod .role-grid {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.ist-mod .role-btn {padding:12px 6px;border:2px solid var(--border);border-radius:12px;background:#fafafa;cursor:pointer;transition:all .2s;text-align:center}
+.ist-mod .role-btn:hover {border-color:var(--accent);background:#f0f9f4}
+.ist-mod .role-btn.sel {border-color:var(--accent);background:#e8fbf3}
+.ist-mod .role-btn .ri {font-size:22px;margin-bottom:2px}
+.ist-mod .role-btn .rn {font-size:11px;font-weight:700;color:var(--primary)}
+.ist-mod .role-btn .rp {font-size:10px;color:var(--muted);margin-top:1px}
+.ist-mod .auth-inp {width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:16px;text-align:center;letter-spacing:6px;margin-bottom:10px;background:#fafafa}
+.ist-mod .auth-inp:focus {outline:none;border-color:var(--accent)}
+.ist-mod .auth-btn {width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+.ist-mod .auth-err {color:var(--red);font-size:12px;margin-top:6px;min-height:16px}
+/* نفس إصلاح pricing-finance.css: صف أزرار أفقي بيتحرك بدل ما يلف، عشان
+   مايطفوش فوق الكارت اللي تحته على شاشة ضيقة */
+.ist-mod .topbar {background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2);gap:10px;flex-wrap:nowrap;overflow-x:auto}
+.ist-mod .tb-role {font-size:14px;font-weight:800;white-space:nowrap}
+.ist-mod .tb-sub {font-size:10px;opacity:.8;white-space:nowrap}
+.ist-mod .tb-btns {display:flex;gap:5px;align-items:center;flex-wrap:nowrap;flex-shrink:0}
+.ist-mod .tb {background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.ist-mod .tb:hover, .ist-mod .tb.on {background:rgba(255,255,255,.32)}
+.ist-mod .topbar--slim {background:var(--card);color:var(--text);box-shadow:none;border-bottom:1px solid var(--border)}
+.ist-mod .topbar--slim .tb-role {color:var(--primary)}
+.ist-mod .topbar--slim .tb {background:var(--accent-soft);color:var(--primary);border:1px solid var(--border)}
+.ist-mod .topbar--slim .tb:hover, .ist-mod .topbar--slim .tb.on {background:var(--accent);color:#fff}
+.ist-mod .pg {padding:12px;max-width:900px;margin:0 auto}
+.ist-mod .cd {background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.ist-mod .ct {font-size:14px;font-weight:800;color:var(--primary);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.ist-mod .bg {display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:800}
+.ist-mod .bg-recv {background:#fff3cd;color:#856404}
+.ist-mod .bg-qty {background:#cce5ff;color:#004085}
+.ist-mod .bg-prc {background:#e8f4fd;color:#1a5276}
+.ist-mod .bg-fin {background:#f3e5f5;color:#6c3483}
+.ist-mod .bg-ok {background:#e8fbf3;color:#12c77a}
+.ist-mod .bg-rej {background:#fce4ec;color:#c0392b}
+.ist-mod .bg-exp {background:#e0f2f1;color:#00695c}
+.ist-mod .st-recv {border-right-color:#d68910!important}
+.ist-mod .st-qty {border-right-color:#0984e3!important}
+.ist-mod .st-prc {border-right-color:#1a5276!important}
+.ist-mod .st-fin {border-right-color:#6c3483!important}
+.ist-mod .st-ok {border-right-color:#12c77a!important}
+.ist-mod .st-rej {border-right-color:#c0392b!important}
+.ist-mod .po-card {background:var(--card);border:1px solid var(--border);border-right:4px solid var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:box-shadow .15s}
+.ist-mod .po-card:hover {box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.ist-mod .ft {width:100%;border-collapse:collapse;font-size:12px}
+.ist-mod .ft th {background:var(--primary);color:#fff;padding:9px 10px;text-align:right;font-weight:700;white-space:nowrap}
+.ist-mod .ft td {padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.ist-mod .ft tr:hover td {background:#f8fffe}
+.ist-mod .fi {width:100%;padding:6px 8px;border:2px solid var(--border);border-radius:7px;font-size:12px;font-family:'Cairo',sans-serif;text-align:center;background:#fff;color:var(--text)}
+.ist-mod .fi:focus {outline:none;border-color:var(--accent)}
+.ist-mod .fi-green {border-color:var(--accent)!important;background:#f0faf5}
+.ist-mod .scan-bar-mobile {position:sticky;top:52px;z-index:15;background:var(--card);padding:10px;border-radius:12px;border:2px solid var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.1);margin-bottom:12px}
+.ist-mod .scan-input-mobile {width:100%;padding:16px 14px;font-size:17px;font-weight:800;text-align:center;border:none;outline:none;background:transparent;color:var(--primary)}
+.ist-mod .last-scanned-card {background:linear-gradient(135deg,#e8fbf3,#f0faf5);border:2px solid var(--accent);border-radius:12px;padding:14px;margin-bottom:12px;animation:flashIn .3s}
+@keyframes flashIn {0%{transform:scale(.96);opacity:0}100%{transform:scale(1);opacity:1}}
+.ist-mod .item-card-mobile {background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.ist-mod .item-card-mobile.warn {border-color:#c0392b;background:#fdf2f4}
+.ist-mod .item-card-mobile .item-name {font-size:15px;font-weight:800;line-height:1.3;margin-bottom:2px}
+.ist-mod .item-card-mobile .item-meta {font-size:11px;color:var(--muted);margin-bottom:10px}
+.ist-mod .qty-stepper {display:flex;align-items:stretch;gap:0;border:2px solid var(--border);border-radius:12px;overflow:hidden;height:52px}
+.ist-mod .qty-stepper button {width:52px;flex-shrink:0;border:none;background:var(--bg);font-size:24px;font-weight:900;color:var(--primary);cursor:pointer;touch-action:manipulation}
+.ist-mod .qty-stepper button:active {background:var(--accent);color:#fff}
+.ist-mod .qty-stepper input {flex:1;border:none;text-align:center;font-size:20px;font-weight:900;background:#fff;color:var(--primary);min-width:0}
+.ist-mod .cost-input-mobile {width:100%;padding:14px;font-size:17px;font-weight:800;text-align:center;border:2px solid var(--border);border-radius:12px;margin-top:8px}
+.ist-mod .big-action-btn {width:100%;padding:16px;border-radius:14px;border:none;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:10px;touch-action:manipulation}
+.ist-mod .loc-bar {background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ist-mod .mode-home-grid {display:flex;flex-direction:column;gap:12px;max-width:420px;margin:0 auto}
+.ist-mod .mode-home-card {background:var(--card);border:2px solid var(--border);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:all .15s;touch-action:manipulation}
+.ist-mod .mode-home-card:active {border-color:var(--accent);background:#f0f9f4}
+.ist-mod .mode-home-icon {font-size:38px;margin-bottom:8px}
+.ist-mod .mode-home-label {font-size:18px;font-weight:900;color:var(--primary);margin-bottom:4px}
+.ist-mod .mode-home-desc {font-size:12px;color:var(--muted)}
+.ist-mod .loc-bar select, .ist-mod .loc-bar input {padding:9px 8px;border:2px solid var(--border);border-radius:8px;font-size:12px;font-family:'Cairo',sans-serif;background:#fff;color:var(--text);flex:1;min-width:100px}
+.ist-mod .mode-toggle {display:flex;border:2px solid var(--accent);border-radius:10px;overflow:hidden;flex:0 0 auto}
+.ist-mod .mode-toggle button {flex:1;padding:9px 6px;border:none;background:#fff;color:var(--accent);font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap}
+.ist-mod .mode-toggle button.on {background:var(--accent);color:#fff}
+.ist-mod .count-sysqty-box {background:var(--bg);border-radius:10px;padding:8px 10px;text-align:center;flex:1}
+.ist-mod .count-sysqty-box label {display:block;font-size:10px;color:var(--muted);font-weight:700;margin-bottom:2px}
+.ist-mod .count-sysqty-box span {font-size:18px;font-weight:900;color:var(--primary)}
+.ist-mod .diff-badge {display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800}
+.ist-mod .diff-ok {background:#e8fbf3;color:#12c77a}
+.ist-mod .diff-short {background:#fce4ec;color:#c0392b}
+.ist-mod .diff-over {background:#e8f2fd;color:#1a73c7}
+.ist-mod .diff-value {font-size:12px;font-weight:800;margin-top:6px}
+.ist-mod .unknown-add-box {background:#fff8e1;border:2px dashed #d68910;border-radius:12px;padding:12px;margin-bottom:10px}
+.ist-mod .unknown-add-box input {width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;font-size:13px;margin-bottom:6px;font-family:'Cairo',sans-serif}
+.ist-mod .px-row {display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.ist-mod .px {padding:10px;border-radius:10px;text-align:center;border:2px solid transparent}
+.ist-mod .px label {display:block;font-size:10px;font-weight:700;margin-bottom:4px}
+.ist-mod .px span {font-size:18px;font-weight:900}
+.ist-mod .px-old {background:#f5f5f5;border-color:#ddd;color:#555}
+.ist-mod .px-new {background:#e8f4fd;border-color:var(--blue);color:var(--blue)}
+.ist-mod .px-sell {background:#e8fbf3;border-color:var(--accent);color:var(--accent)}
+.ist-mod .px-alert {background:#fce4ec;border-color:var(--red);color:var(--red)}
+.ist-mod .ig {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ist-mod .ib {padding:8px 10px;background:var(--bg);border-radius:8px}
+.ist-mod .ib label {display:block;font-size:9px;color:var(--muted);font-weight:700;margin-bottom:2px}
+.ist-mod .ib span {font-size:12px;font-weight:700}
+.ist-mod .ds {position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto}
+.ist-mod .dh {background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:12px 14px;position:sticky;top:0}
+.ist-mod .dg {display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.ist-mod .db {background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.ist-mod .dn {font-size:28px;font-weight:900;color:var(--primary)}
+.ist-mod .dl {font-size:11px;color:var(--muted);margin-top:3px}
+.ist-mod .fnt {width:100%;border-collapse:collapse;font-size:12px}
+.ist-mod .fnt th {background:var(--blue);color:#fff;padding:9px 10px;text-align:right;font-weight:700}
+.ist-mod .fnt td {padding:9px 10px;border-bottom:1px solid var(--border)}
+.ist-mod .bn {padding:8px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer}
+.ist-mod .bn-p {background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff}
+.ist-mod .bn-d {background:var(--red);color:#fff}
+.ist-mod .bn-g {background:var(--bg);border:1px solid var(--border);color:var(--text)}
+.ist-mod .bn-b {background:var(--blue);color:#fff}
+.ist-mod .bn-o {background:var(--orange);color:#fff}
+.ist-mod .br {display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.ist-mod .log-item {display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.ist-mod .log-dot {width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ist-mod .log-info {flex:1}
+.ist-mod .up-zone {border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s}
+.ist-mod .up-zone:hover {border-color:var(--accent);background:#f0faf5}
+.ist-mod .match-ok {background:#e8fbf3!important}
+.ist-mod .match-diff {background:#fef9e7!important}
+.ist-mod .match-err {background:#fce4ec!important}
+#ist-toast {position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e2235;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+.ist-mod .empty {text-align:center;padding:30px;color:var(--muted)}
+.ist-mod .empty-i {font-size:40px;margin-bottom:8px}
+@media(max-width:500px) {
+.ist-mod .px-row, .ist-mod .ig, .ist-mod .dg {grid-template-columns:1fr 1fr}
+.ist-mod .role-grid {grid-template-columns:1fr 1fr}
+}

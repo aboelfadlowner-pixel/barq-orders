@@ -1,0 +1,75 @@
+/* موديول "المستخدمين والصلاحيات" — بيستخدم نفس متغيرات shared.css
+   (--primary/--accent/--bg/--card/--border/--text/--muted) عشان يبقى
+   متسق مع باقي الأقسام تمامًا، مفيش ألوان جديدة هنا. */
+
+.al-mod { max-width: 980px; }
+
+.al-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+.al-header h2 { font-size: 19px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.al-header .al-sub { font-size: 12.5px; color: var(--muted); max-width: 480px; }
+
+.al-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+
+.al-add-card h3 { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 12px; }
+.al-add-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 12px; }
+.al-add-actions { display: flex; gap: 8px; }
+
+.al-input, .al-select {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 9px;
+  background: var(--bg); color: var(--text); font-family: 'Cairo', sans-serif; font-size: 13.5px; outline: none;
+}
+.al-input:focus, .al-select:focus { border-color: var(--accent); }
+
+.al-btn {
+  padding: 9px 16px; border-radius: 9px; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: all .15s;
+}
+.al-btn:hover { border-color: var(--accent); }
+.al-btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.al-btn-primary:hover { background: var(--primary); border-color: var(--primary); }
+.al-btn-danger { color: var(--red); border-color: var(--red); background: #fff; }
+.al-btn-danger:hover { background: var(--red); color: #fff; }
+
+.al-error {
+  margin-top: 10px; background: #fef0ef; border: 1.5px solid #f8cdc9; border-radius: 8px;
+  padding: 9px 12px; color: var(--red); font-size: 12.5px;
+}
+
+.al-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.al-table th {
+  text-align: right; padding: 10px 8px; color: var(--muted); font-weight: 700; font-size: 12px;
+  border-bottom: 2px solid var(--border);
+}
+.al-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.al-table tr:last-child td { border-bottom: none; }
+.al-empty { text-align: center; color: var(--muted); padding: 24px; }
+
+.al-role-chip {
+  display: inline-block; background: var(--bg); border: 1px solid var(--border); border-radius: 20px;
+  padding: 4px 12px; font-size: 12.5px; font-weight: 700; color: var(--primary);
+}
+
+.al-status { font-size: 12.5px; font-weight: 700; }
+.al-status-on { color: var(--accent); }
+.al-status-off { color: var(--muted); }
+
+.al-switch { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
+
+.al-actions { display: flex; gap: 6px; white-space: nowrap; }
+
+.al-editing td { background: #f7fcf9; }
+
+@media (max-width: 700px) {
+  .al-add-grid { grid-template-columns: 1fr; }
+  .al-table, .al-table thead, .al-table tbody, .al-table th, .al-table td, .al-table tr { display: block; }
+  .al-table thead { display: none; }
+  .al-table tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; padding: 8px; }
+  .al-table td { border-bottom: none; padding: 6px 4px; }
+}

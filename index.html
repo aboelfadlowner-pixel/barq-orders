@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>برق</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shared.css">
+</head>
+<body>
+<div id="barq-root"></div>
+
+<script src="js/core/supabase-client.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/sidebar.js"></script>
+<link rel="stylesheet" href="css/modules/barcode-print.css">
+<link rel="stylesheet" href="css/modules/orders.css">
+<link rel="stylesheet" href="css/modules/orders-factory.css">
+<link rel="stylesheet" href="css/modules/orders-dept-prep.css">
+<link rel="stylesheet" href="css/modules/purchasing-inventory.css">
+<link rel="stylesheet" href="css/modules/pricing-finance.css">
+<link rel="stylesheet" href="css/modules/receiving-stocktake.css">
+<link rel="stylesheet" href="css/modules/access-list.css">
+<link rel="stylesheet" href="css/modules/support-admin.css">
+<link rel="stylesheet" href="css/modules/reports.css">
+<link rel="stylesheet" href="css/modules/decision-kitchen.css">
+<!-- الموديولات (تُضاف تباعًا في المراحل القادمة) -->
+<script src="js/vendor/jsbarcode.min.js"></script>
+<script src="js/vendor/papaparse.min.js"></script>
+<script src="js/vendor/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="js/modules/barcode-print.js"></script>
+<script src="js/modules/orders.js"></script>
+<script src="js/modules/orders-factory.js"></script>
+<script src="js/modules/orders-dept-prep.js"></script>
+<script src="js/modules/purchasing-inventory.js"></script>
+<script src="js/modules/pricing-finance.js"></script>
+<script src="js/modules/receiving-stocktake.js"></script>
+<script src="js/modules/access-list.js"></script>
+<script src="js/modules/support-admin.js"></script>
+<script src="js/modules/reports.js"></script>
+<script src="js/modules/decision-kitchen.js"></script>
+
+<script>
+  BARQ_AUTH.restoreSession();
+  BarqApp.render();
+</script>
+</body>
+</html>
