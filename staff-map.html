@@ -120,6 +120,16 @@
   .sim-person .sim-label { font-size: 8px; font-weight: 800; background: rgba(255,255,255,.92); border-radius: 6px; padding: 1px 4px; white-space: nowrap; margin-top: -2px; display: inline-block; max-width: 70px; overflow: hidden; text-overflow: ellipsis; }
   .sim-person .badge-pill { top: -10px; left: 50%; transform: translateX(-50%); }
   @keyframes sim-bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+
+  /* ===== تبويبات الشيفت (لايف / صباحي / بتوين / ليلي) ===== */
+  .shift-tabs { max-width: 1400px; margin: 0 auto; padding: 12px 16px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .shift-tab { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; font-family: 'Cairo',sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; color: var(--text); position: relative; }
+  .shift-tab.active { border-color: var(--accent); background: #e8f5ee; color: var(--accent); }
+  .shift-tab .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); margin-left: 5px; animation: pulse-dot 1.2s infinite; }
+  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  .shift-note { font-size: 10.5px; color: var(--muted); font-weight: 700; }
+  .not-logged { opacity: .55; }
+  .chip-status.not-logged, .avatar.not-logged { background: #eee !important; color: var(--muted) !important; }
 </style>
 </head>
 <body>
@@ -142,13 +152,15 @@
 
 <div class="banner" id="syncBanner">جارِ التحميل...</div>
 
+<div class="shift-tabs" id="shiftTabs"></div>
+
 <div class="wrap">
 
   <div class="summary">
-    <div class="stat"><div class="n" id="statPresent">-</div><div class="l">حاضر الآن (في الشيفت)</div></div>
-    <div class="stat"><div class="n" id="statRequired">-</div><div class="l">المطلوب الآن</div></div>
-    <div class="stat"><div class="n" id="statRoster">-</div><div class="l">إجمالي الروستر بالفرع</div></div>
-    <div class="stat warn"><div class="n" id="statAlerts">-</div><div class="l">تنبيهات حالية</div></div>
+    <div class="stat"><div class="n" id="statPresent">-</div><div class="l" id="statPresentLabel">حاضر الآن</div></div>
+    <div class="stat"><div class="n" id="statRequired">-</div><div class="l" id="statRequiredLabel">المطلوب</div></div>
+    <div class="stat"><div class="n" id="statRoster">-</div><div class="l">إجمالي روستر الشيفت</div></div>
+    <div class="stat warn"><div class="n" id="statAlerts">-</div><div class="l" id="statAlertsLabel">تنبيهات</div></div>
   </div>
 
   <div class="floor-sim" id="floorSim"></div>
@@ -263,6 +275,46 @@ function computeStatus(emp, minutesSinceMidnight) {
   return emp.atte === 'حضور' ? 'منضبط' : 'غياب';
 }
 function isBadStatus(status) { return status === 'غياب' || status === 'تأخير' || status === 'اجازة'; }
+
+/* =========================================================
+   سجل الشيفتات: بما إن مفيش سيرفر بيسجل تاريخ الحضور، الصفحة
+   نفسها بتسجل في localStorage آخر حالة معروفة لكل موظف وهو في
+   شيفته وانت فاتح الصفحة. كده لو فتحت بالليل تقدر تشوف اللي
+   حصل في شيفت الصباح (لو كانت الصفحة اتفتحت وقته ولو مرة).
+   الشيفت اللايف (الجاري دلوقتي) بيتعرض بالبيانات الحية مباشرة.
+========================================================= */
+const SHIFT_ORDER = ['صباحي', 'بتوين', 'ليلي'];
+const SHIFT_LABEL = { 'صباحي': '🌅 صباحي (6ص–2م)', 'بتوين': '🌆 بتوين (2م–10م)', 'ليلي': '🌙 ليلي (10م–6ص)' };
+function getActiveShiftName(now) {
+  const h = now.getHours();
+  if (h >= 6 && h < 14) return 'صباحي';
+  if (h >= 14 && h < 22) return 'بتوين';
+  return 'ليلي';
+}
+function getShiftDateKey(shiftName, now) {
+  const d = new Date(now);
+  if (shiftName === 'ليلي' && d.getHours() < 6) d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+function shiftLogKey(shiftName, now) {
+  return `staffmap_shiftlog_${currentBranch}_${shiftName}_${getShiftDateKey(shiftName, now)}`;
+}
+function logCurrentShiftSnapshot(depts, minutesNow) {
+  const now = new Date();
+  Object.keys(depts).forEach(deptName => {
+    depts[deptName].forEach(e => {
+      if (!onShiftNow(e.shift, minutesNow)) return;
+      const key = shiftLogKey(e.shift, now);
+      const log = JSON.parse(localStorage.getItem(key) || '{}');
+      log[e.code] = { name: e.name, dept: deptName, role: e.role, status: computeStatus(e, minutesNow), ts: now.toISOString() };
+      localStorage.setItem(key, JSON.stringify(log));
+    });
+  });
+}
+function getShiftLog(shiftName) {
+  try { return JSON.parse(localStorage.getItem(shiftLogKey(shiftName, new Date())) || '{}'); }
+  catch(e) { return {}; }
+}
 
 let currentEmpCode = null;
 function openEmpModal(code, deptName, branch) {
@@ -385,6 +437,18 @@ function setView(v) {
 }
 setView('sim');
 
+let currentShiftFilter = null; // بيتحدد على شيفت اللايف أول مرة، وتقدر تبدّله من التبويبات
+function selectShift(s) { currentShiftFilter = s; render(); }
+function renderShiftTabs(now) {
+  const activeShift = getActiveShiftName(now);
+  document.getElementById('shiftTabs').innerHTML = SHIFT_ORDER.map(s => {
+    const isLive = s === activeShift;
+    return `<button class="shift-tab ${s===currentShiftFilter?'active':''}" onclick="selectShift('${s}')">
+      ${SHIFT_LABEL[s]}${isLive ? ' <span class="live-dot"></span> لايف' : ''}
+    </button>`;
+  }).join('');
+}
+
 /* شخصية/إيموجي تمثيلية حسب الوظيفة أو القسم — عشان يحس إنه شايف موظفين حقيقيين */
 function emojiFor(role, dept) {
   const t = role + ' ' + dept;
@@ -403,38 +467,38 @@ function emojiFor(role, dept) {
   return '🧑';
 }
 
-/* موقع عشوائي داخل حدود المنطقة (نسبة مئوية) */
-function randPos() { return { left: 8 + Math.random()*74, top: 22 + Math.random()*65 }; }
+/* موقع ثابت (مش عشوائي) لكل موظف داخل القسم — واقف مكانه، مبيتحركش */
+function gridPos(i, total) {
+  const cols = Math.max(2, Math.ceil(Math.sqrt(total)));
+  const col = i % cols;
+  const row = Math.floor(i / cols);
+  const cellW = 78 / cols;
+  return { left: 10 + col * cellW, top: 28 + row * 30 };
+}
 
-function renderFloorSim(depts, minutesNow, hour) {
+function renderFloorSim(viewDepts, isLiveShift) {
   const sim = document.getElementById('floorSim');
   sim.innerHTML = '';
-  Object.keys(depts).forEach(deptName => {
-    const employees = depts[deptName];
-    const required = getRequired(currentBranch, deptName, employees.length);
-    const reqNow = required[hour] ?? Math.max(1, Math.round(employees.length * 0.6));
-    const statuses = employees.map(e => computeStatus(e, minutesNow));
-    const presentNow = statuses.filter(s => s === 'منضبط').length;
-    const short = presentNow < reqNow;
-
-    const zoneHeight = Math.max(130, Math.min(260, 90 + employees.length * 22));
+  Object.keys(viewDepts).forEach(deptName => {
+    const employees = viewDepts[deptName];
+    const presentNow = employees.filter(e => e._status === 'منضبط').length;
+    const zoneHeight = Math.max(130, Math.min(280, 90 + employees.length * 20));
     const zone = document.createElement('div');
-    zone.className = 'sim-zone' + (short ? ' shortage' : '');
+    zone.className = 'sim-zone';
     zone.style.minHeight = zoneHeight + 'px';
     zone.innerHTML = `
       <div class="sim-zone-label">${deptName}</div>
-      <div class="sim-zone-count ${short?'short':''}">${presentNow}/${reqNow}</div>`;
+      <div class="sim-zone-count">${presentNow}/${employees.length}</div>`;
     employees.forEach((e,i) => {
-      const status = statuses[i];
-      const bad = isBadStatus(status);
-      const pos = bad ? { left: 10 + (i%5)*15, top: 18 } : randPos();
+      const bad = isBadStatus(e._status) || e._status === 'غير مسجل';
+      const pos = gridPos(i, employees.length);
       const person = document.createElement('div');
       person.className = 'sim-person' + (bad ? ' faded' : '');
       person.style.left = pos.left + '%';
       person.style.top = pos.top + '%';
       person.onclick = () => openEmpModal(e.code, deptName, currentBranch);
       person.innerHTML = `
-        ${bad ? `<span class="badge-pill ${status==='اجازة'?'leave':''}">${status}</span>` : ''}
+        ${isBadStatus(e._status) ? `<span class="badge-pill ${e._status==='اجازة'?'leave':''}">${e._status}</span>` : ''}
         <span class="emoji">${emojiFor(e.role, deptName)}</span>
         <span class="sim-label">${e.name.split(' ')[0]}</span>`;
       zone.appendChild(person);
@@ -442,48 +506,53 @@ function renderFloorSim(depts, minutesNow, hour) {
     sim.appendChild(zone);
   });
 }
-function wanderTick() {
-  if (currentView !== 'sim') return;
-  document.querySelectorAll('.sim-person:not(.faded)').forEach(el => {
-    const pos = randPos();
-    el.style.left = pos.left + '%';
-    el.style.top = pos.top + '%';
-  });
-}
-setInterval(wanderTick, 2800);
 
 function render() {
   const now = new Date();
   document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
   const minutesNow = now.getHours()*60 + now.getMinutes();
   const hour = now.getHours();
+  const activeShift = getActiveShiftName(now);
+  if (!currentShiftFilter) currentShiftFilter = activeShift;
+  const isLiveShift = currentShiftFilter === activeShift;
 
-  const depts = BRANCH_DATA[currentBranch] || {};
+  const allDepts = BRANCH_DATA[currentBranch] || {};
+  logCurrentShiftSnapshot(allDepts, minutesNow); // يسجل شيفت اللايف الحقيقي بغض النظر عن التبويب المعروض
+  const log = isLiveShift ? null : getShiftLog(currentShiftFilter);
+
+  const viewDepts = {};
+  Object.keys(allDepts).forEach(deptName => {
+    const emps = allDepts[deptName].filter(e => e.shift === currentShiftFilter);
+    if (emps.length === 0) return;
+    viewDepts[deptName] = emps.map(e => {
+      const status = isLiveShift ? computeStatus(e, minutesNow) : ((log[e.code] && log[e.code].status) || 'غير مسجل');
+      return Object.assign({}, e, { _status: status });
+    });
+  });
+
+  renderShiftTabs(now);
+
   const floor = document.getElementById('floorGrid');
   floor.innerHTML = '';
-
-  let totalPresent = 0, totalRequired = 0, totalRoster = 0;
+  let totalPresent = 0, totalRoster = 0, totalRequired = 0;
   const alerts = [];
 
-  Object.keys(depts).forEach(deptName => {
-    const employees = depts[deptName];
+  Object.keys(viewDepts).forEach(deptName => {
+    const employees = viewDepts[deptName];
     totalRoster += employees.length;
-    const required = getRequired(currentBranch, deptName, employees.length);
-    const reqNow = required[hour] ?? Math.max(1, Math.round(employees.length * 0.6));
+    const presentNow = employees.filter(e => e._status === 'منضبط').length;
+    totalPresent += presentNow;
 
-    const statuses = employees.map(e => computeStatus(e, minutesNow));
-    const presentNow = statuses.filter(s => s === 'منضبط').length;
-    const badOnes = employees.filter((e,i) => isBadStatus(statuses[i]));
-
-    totalPresent += presentNow; totalRequired += reqNow;
-
-    const short = presentNow < reqNow;
-    if (short) {
-      alerts.push({ title: `${deptName} (${currentBranch}): نقص موظفين`, detail: `الحاضر الآن ${presentNow} من أصل ${reqNow} مطلوبين في الساعة ${hour}:00` });
+    let reqNow = null, short = false;
+    if (isLiveShift) {
+      const required = getRequired(currentBranch, deptName, allDepts[deptName].length);
+      reqNow = required[hour] ?? Math.max(1, Math.round(allDepts[deptName].length * 0.6));
+      totalRequired += reqNow;
+      short = presentNow < reqNow;
+      if (short) alerts.push({ title: `${deptName}: نقص موظفين`, detail: `الحاضر الآن ${presentNow} من أصل ${reqNow} مطلوبين في الساعة ${hour}:00` });
     }
-    badOnes.forEach((e,idx) => {
-      const s = statuses[employees.indexOf(e)];
-      alerts.push({ title: `${deptName}: ${e.name} — ${s}`, detail: `الوظيفة: ${e.role} — شيفت ${e.shift} — كود ${e.code}` });
+    employees.forEach(e => {
+      if (isBadStatus(e._status)) alerts.push({ title: `${deptName}: ${e.name} — ${e._status}`, detail: `${e.role} — كود ${e.code}` });
     });
 
     const card = document.createElement('div');
@@ -492,23 +561,24 @@ function render() {
       <div class="dept-head">
         <div class="dept-name">${deptName}</div>
         <div class="dept-count ${short?'short':''}">
-          <span class="present">${presentNow}</span> / <input type="number" class="req-edit" min="0" value="${reqNow}" data-dept="${deptName}">
+          <span class="present">${presentNow}</span> / ${isLiveShift ? `<input type="number" class="req-edit" min="0" value="${reqNow}" data-dept="${deptName}">` : `<b>${employees.length}</b>`}
         </div>
       </div>
       <div class="positions">
-        ${employees.map((e,i) => {
-          const status = statuses[i];
+        ${employees.map(e => {
+          const status = e._status;
           const bad = isBadStatus(status);
-          const cls = status === 'منضبط' ? 'present' : (bad ? 'absent-onshift' : 'off');
+          const notLogged = status === 'غير مسجل';
+          const cls = status === 'منضبط' ? 'present' : (bad ? 'absent-onshift' : (notLogged ? 'not-logged' : 'off'));
           const badgeClass = status === 'اجازة' ? 'leave' : '';
           return `<div class="chip ${bad?'anomaly':''}" onclick="openEmpModal('${e.code}','${deptName.replace(/'/g,"\\'")}','${currentBranch.replace(/'/g,"\\'")}')">
               <div class="avatar-wrap">
-                <div class="avatar ${cls} ${bad?'faded':''}">${initials(e.name)}</div>
+                <div class="avatar ${cls} ${(bad||notLogged)?'faded':''}">${initials(e.name)}</div>
                 ${bad ? `<span class="badge-pill ${badgeClass}">${status}</span>` : ''}
               </div>
               <div class="chip-info">
                 <div class="chip-name">${e.name}</div>
-                <div class="chip-role">${e.role} · ${e.shift} · #${e.code}</div>
+                <div class="chip-role">${e.role} · #${e.code}</div>
               </div>
               <span class="chip-status ${cls}">${status}</span>
             </div>`;
@@ -524,19 +594,22 @@ function render() {
     });
   });
 
-  renderFloorSim(depts, minutesNow, hour);
+  renderFloorSim(viewDepts, isLiveShift);
 
+  document.getElementById('statPresentLabel').textContent = isLiveShift ? 'حاضر الآن' : 'كان حاضر';
+  document.getElementById('statRequiredLabel').textContent = isLiveShift ? 'المطلوب الآن' : 'إجمالي روستر الشيفت';
+  document.getElementById('statAlertsLabel').textContent = 'تنبيهات';
   document.getElementById('statPresent').textContent = totalPresent;
-  document.getElementById('statRequired').textContent = totalRequired;
+  document.getElementById('statRequired').textContent = isLiveShift ? totalRequired : totalRoster;
   document.getElementById('statRoster').textContent = totalRoster;
   document.getElementById('statAlerts').textContent = alerts.length;
 
   const alertsList = document.getElementById('alertsList');
-  const badge = document.getElementById('alertCountBadge');
-  badge.textContent = alerts.length || '';
-  badge.style.display = alerts.length ? 'inline-block' : 'none';
+  const badgeEl = document.getElementById('alertCountBadge');
+  badgeEl.textContent = alerts.length || '';
+  badgeEl.style.display = alerts.length ? 'inline-block' : 'none';
   alertsList.innerHTML = alerts.length === 0
-    ? `<div class="no-alerts"><div class="icon">✅</div>كل الأقسام مغطاة حسب الخطة</div>`
+    ? `<div class="no-alerts"><div class="icon">✅</div>${isLiveShift ? 'كل الأقسام مغطاة حسب الخطة' : 'مفيش حالات غياب مسجلة في الشيفت ده'}</div>`
     : alerts.map(a => `<div class="alert-item"><div class="t">${a.title}</div><div class="d">${a.detail}</div></div>`).join('');
 }
 
