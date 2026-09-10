@@ -101,6 +101,25 @@
   .override-btn { border: 1.5px solid var(--border); background: var(--bg); border-radius: 10px; padding: 10px 4px; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
   .override-btn.active { border-color: var(--red); background: #fef0ef; color: var(--red); }
   .override-reset { width: 100%; margin-top: 8px; border: none; background: none; color: var(--muted); font-family: 'Cairo',sans-serif; font-size: 11px; padding: 8px; cursor: pointer; text-decoration: underline; }
+
+  /* ===== محاكاة الفرع (شخصيات متحركة داخل الأقسام) ===== */
+  .view-toggle { display: flex; gap: 4px; background: rgba(255,255,255,.15); border-radius: 10px; padding: 3px; }
+  .view-toggle button { border: none; background: transparent; color: #fff; padding: 6px 12px; border-radius: 8px; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; opacity: .75; }
+  .view-toggle button.active { background: #fff; color: var(--primary); opacity: 1; }
+  .floor-sim { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 14px; }
+  .sim-zone { position: relative; border-radius: var(--radius); border: 2px dashed var(--border); background:
+      repeating-linear-gradient(90deg, #eef3ee 0 40px, #e6ede7 40px 80px);
+      box-shadow: var(--shadow); overflow: hidden; }
+  .sim-zone.shortage { border-color: var(--red); border-style: solid; }
+  .sim-zone-label { position: absolute; top: 6px; right: 8px; background: rgba(255,255,255,.9); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 900; color: var(--primary); z-index: 5; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .sim-zone-count { position: absolute; top: 6px; left: 8px; background: rgba(255,255,255,.9); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 800; z-index: 5; }
+  .sim-zone-count.short { color: var(--red); }
+  .sim-person { position: absolute; width: 40px; text-align: center; cursor: pointer; transition: left 2.6s ease-in-out, top 2.6s ease-in-out; z-index: 2; }
+  .sim-person .emoji { font-size: 24px; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); animation: sim-bob 0.6s ease-in-out infinite alternate; }
+  .sim-person.faded .emoji { opacity: .35; filter: grayscale(80%); animation: none; }
+  .sim-person .sim-label { font-size: 8px; font-weight: 800; background: rgba(255,255,255,.92); border-radius: 6px; padding: 1px 4px; white-space: nowrap; margin-top: -2px; display: inline-block; max-width: 70px; overflow: hidden; text-overflow: ellipsis; }
+  .sim-person .badge-pill { top: -10px; left: 50%; transform: translateX(-50%); }
+  @keyframes sim-bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
 </style>
 </head>
 <body>
@@ -111,6 +130,10 @@
     <div class="sub">بيانات حقيقية من شيت "حضور و انصراف يومي" — مرتبطة بأكواد البصمة</div>
   </div>
   <div class="top-right">
+    <div class="view-toggle">
+      <button id="tabSim" onclick="setView('sim')">🎬 محاكاة الفرع</button>
+      <button id="tabList" onclick="setView('list')">📋 قائمة</button>
+    </div>
     <select class="branch-select" id="branchSelect"></select>
     <span class="clock" id="clockDisplay">--:--</span>
     <button class="top-btn" id="syncBtn" onclick="syncNow()">🔄 مزامنة الآن</button>
@@ -128,7 +151,8 @@
     <div class="stat warn"><div class="n" id="statAlerts">-</div><div class="l">تنبيهات حالية</div></div>
   </div>
 
-  <div class="floor" id="floorGrid"></div>
+  <div class="floor-sim" id="floorSim"></div>
+  <div class="floor" id="floorGrid" style="display:none"></div>
 
   <div class="alerts-panel">
     <h3>🚨 التنبيهات <span id="alertCountBadge" style="font-size:11px;background:var(--red);color:#fff;border-radius:10px;padding:2px 8px;"></span></h3>
@@ -351,6 +375,83 @@ branchSelect.addEventListener('change', () => { currentBranch = branchSelect.val
 
 const initials = n => n.trim().split(' ').slice(0,2).map(w=>w[0]).join('');
 
+let currentView = 'sim';
+function setView(v) {
+  currentView = v;
+  document.getElementById('tabSim').classList.toggle('active', v === 'sim');
+  document.getElementById('tabList').classList.toggle('active', v === 'list');
+  document.getElementById('floorSim').style.display = v === 'sim' ? 'grid' : 'none';
+  document.getElementById('floorGrid').style.display = v === 'list' ? 'grid' : 'none';
+}
+setView('sim');
+
+/* شخصية/إيموجي تمثيلية حسب الوظيفة أو القسم — عشان يحس إنه شايف موظفين حقيقيين */
+function emojiFor(role, dept) {
+  const t = role + ' ' + dept;
+  const has = s => t.indexOf(s) !== -1;
+  if (has('شيف') || has('طاهي')) return '👨‍🍳';
+  if (has('كاشير')) return '🧑‍💼';
+  if (has('امن') || has('مراقب')) return '🛡️';
+  if (has('دليفري')) return '🛵';
+  if (has('ايس كريم') || has('باريستا')) return '🍦';
+  if (has('فاكهه') || has('بقاله')) return '🧺';
+  if (has('مخزن') || has('سائق')) return '📦';
+  if (has('حسابات') || has('داتا') || has('تسعير')) return '💻';
+  if (has('خدمة عملاء') || has('خدمه العملاء') || has('سيلز')) return '🎧';
+  if (has('تجهيز') || has('معمل') || has('تصنيع') || has('تركي') || has('بيض') || has('رنجه')) return '👷';
+  if (has('مدير') || has('ليدر') || has('هيد') || has('نائب')) return '🧑‍💼';
+  return '🧑';
+}
+
+/* موقع عشوائي داخل حدود المنطقة (نسبة مئوية) */
+function randPos() { return { left: 8 + Math.random()*74, top: 22 + Math.random()*65 }; }
+
+function renderFloorSim(depts, minutesNow, hour) {
+  const sim = document.getElementById('floorSim');
+  sim.innerHTML = '';
+  Object.keys(depts).forEach(deptName => {
+    const employees = depts[deptName];
+    const required = getRequired(currentBranch, deptName, employees.length);
+    const reqNow = required[hour] ?? Math.max(1, Math.round(employees.length * 0.6));
+    const statuses = employees.map(e => computeStatus(e, minutesNow));
+    const presentNow = statuses.filter(s => s === 'منضبط').length;
+    const short = presentNow < reqNow;
+
+    const zoneHeight = Math.max(130, Math.min(260, 90 + employees.length * 22));
+    const zone = document.createElement('div');
+    zone.className = 'sim-zone' + (short ? ' shortage' : '');
+    zone.style.minHeight = zoneHeight + 'px';
+    zone.innerHTML = `
+      <div class="sim-zone-label">${deptName}</div>
+      <div class="sim-zone-count ${short?'short':''}">${presentNow}/${reqNow}</div>`;
+    employees.forEach((e,i) => {
+      const status = statuses[i];
+      const bad = isBadStatus(status);
+      const pos = bad ? { left: 10 + (i%5)*15, top: 18 } : randPos();
+      const person = document.createElement('div');
+      person.className = 'sim-person' + (bad ? ' faded' : '');
+      person.style.left = pos.left + '%';
+      person.style.top = pos.top + '%';
+      person.onclick = () => openEmpModal(e.code, deptName, currentBranch);
+      person.innerHTML = `
+        ${bad ? `<span class="badge-pill ${status==='اجازة'?'leave':''}">${status}</span>` : ''}
+        <span class="emoji">${emojiFor(e.role, deptName)}</span>
+        <span class="sim-label">${e.name.split(' ')[0]}</span>`;
+      zone.appendChild(person);
+    });
+    sim.appendChild(zone);
+  });
+}
+function wanderTick() {
+  if (currentView !== 'sim') return;
+  document.querySelectorAll('.sim-person:not(.faded)').forEach(el => {
+    const pos = randPos();
+    el.style.left = pos.left + '%';
+    el.style.top = pos.top + '%';
+  });
+}
+setInterval(wanderTick, 2800);
+
 function render() {
   const now = new Date();
   document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
@@ -422,6 +523,8 @@ function render() {
       render();
     });
   });
+
+  renderFloorSim(depts, minutesNow, hour);
 
   document.getElementById('statPresent').textContent = totalPresent;
   document.getElementById('statRequired').textContent = totalRequired;
