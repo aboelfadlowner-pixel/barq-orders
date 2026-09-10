@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>مجسم توزيع الموظفين - الفرع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a2a; --accent: #2d8653; --accent2: #f0a500;
+    --bg: #f4f6f4; --card: #fff; --text: #1a2e1a; --muted: #6b8f71;
+    --border: #d4e4d8; --red: #c0392b; --orange: #e08c00; --gray: #9aa8a0;
+    --shadow: 0 2px 16px rgba(30,70,40,0.10); --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Cairo', Tahoma, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  /* Top bar */
+  .top-bar { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; padding: 14px 18px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.2); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .top-bar h1 { font-size: 17px; font-weight: 900; }
+  .top-bar .sub { font-size: 11px; opacity: .85; margin-top: 2px; }
+  .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .clock { background: rgba(255,255,255,.15); border-radius: 10px; padding: 7px 14px; font-weight: 800; font-size: 15px; letter-spacing: .5px; }
+  .mode-badge { background: var(--accent2); color: var(--primary); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 800; }
+  .top-btn { background: rgba(255,255,255,.15); border: none; color: #fff; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-family: 'Cairo',sans-serif; font-size: 12px; font-weight: 700; }
+  .top-btn:hover { background: rgba(255,255,255,.28); }
+  .top-btn.active { background: #fff; color: var(--primary); }
+
+  .banner { background: #fff8e7; border-bottom: 1.5px solid #f0c040; color: #7a5a00; font-size: 12px; padding: 8px 18px; text-align: center; font-weight: 700; }
+
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+
+  /* Summary strip */
+  .summary { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 4px; }
+  .stat { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: var(--shadow); }
+  .stat .n { font-size: 26px; font-weight: 900; color: var(--primary); }
+  .stat .l { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+  .stat.warn .n { color: var(--red); }
+
+  /* Time scrubber */
+  .time-panel { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 16px; box-shadow: var(--shadow); grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .time-panel input[type=range] { flex: 1; min-width: 180px; accent-color: var(--accent); }
+  .time-panel .lbl { font-size: 12px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+
+  /* Departments grid = "المجسم" */
+  .floor { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 14px; align-content: start; }
+  .dept-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 2px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
+  .dept-card.shortage { border-color: var(--red); }
+  .dept-head { padding: 12px 14px; background: linear-gradient(135deg,#eef7f1,#fff); display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid var(--border); }
+  .dept-name { font-size: 14px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+  .dept-count { font-size: 12px; font-weight: 800; }
+  .dept-count .present { color: var(--accent); }
+  .dept-count .req { color: var(--muted); }
+  .dept-count.short .present { color: var(--red); }
+  .positions { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { display: flex; align-items: center; gap: 7px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 10px 5px 5px; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0; }
+  .avatar.present { background: var(--accent); box-shadow: 0 0 0 2px #b8e6c8; }
+  .avatar.break { background: var(--orange); box-shadow: 0 0 0 2px #ffe0a3; }
+  .avatar.off { background: var(--gray); }
+  .chip-info { line-height: 1.25; }
+  .chip-name { font-size: 11.5px; font-weight: 800; }
+  .chip-role { font-size: 9.5px; color: var(--muted); font-weight: 700; }
+  .chip-status { font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 8px; margin-right: 2px; }
+  .chip-status.present { background: #e8f5ee; color: var(--accent); }
+  .chip-status.break { background: #fff3de; color: var(--orange); }
+  .chip-status.off { background: #eee; color: var(--gray); }
+  .empty-dept { padding: 16px; text-align: center; color: var(--muted); font-size: 12px; }
+
+  /* Alerts panel */
+  .alerts-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1.5px solid var(--border); padding: 14px; align-self: start; position: sticky; top: 150px; max-height: 80vh; overflow-y: auto; }
+  .alerts-panel h3 { font-size: 14px; font-weight: 900; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .alert-item { background: #fef0ef; border: 1.5px solid #f8cdc9; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; }
+  .alert-item .t { font-weight: 800; color: var(--red); margin-bottom: 3px; }
+  .alert-item .d { color: #7a3530; font-size: 11px; }
+  .alert-item .time { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .no-alerts { text-align: center; color: var(--muted); padding: 24px 10px; font-size: 12px; }
+  .no-alerts .icon { font-size: 34px; margin-bottom: 6px; }
+
+  /* Settings modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 700px; max-height: 88vh; overflow-y: auto; padding: 0 0 24px; }
+  .modal-head { position: sticky; top: 0; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1.5px solid var(--border); }
+  .modal-head h3 { font-size: 16px; font-weight: 900; color: var(--primary); }
+  .modal-close { background: var(--bg); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 16px; cursor: pointer; }
+  .settings-body { padding: 14px 18px; }
+  .dept-setting { border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+  .dept-setting h4 { font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+  .hour-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 8px; }
+  .hour-cell { text-align: center; }
+  .hour-cell label { font-size: 9px; color: var(--muted); font-weight: 700; display: block; margin-bottom: 2px; }
+  .hour-cell input { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 4px 2px; text-align: center; font-family: 'Cairo',sans-serif; font-size: 11px; }
+  .rotation-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 6px; }
+  .rotation-row input { width: 50px; border: 1.5px solid var(--border); border-radius: 6px; padding: 4px; text-align: center; }
+  .save-bar { position: sticky; bottom: 0; background: #fff; padding: 12px 18px; border-top: 1.5px solid var(--border); }
+  .save-btn { width: 100%; background: linear-gradient(135deg,var(--accent),var(--primary)); color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: 'Cairo',sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>🏬 مجسم توزيع الموظفين - ماركت ١</h1>
+    <div class="sub">متابعة تواجد الموظفين حسب البوزيشن + خطة المان باور لكل قسم</div>
+  </div>
+  <div class="top-right">
+    <span class="mode-badge" id="modeBadge">بيانات تجريبية</span>
+    <span class="clock" id="clockDisplay">--:--</span>
+    <button class="top-btn" id="liveBtn">مباشر</button>
+    <button class="top-btn" onclick="openSettings()">⚙️ إعداد المان باور</button>
+  </div>
+</div>
+
+<div class="banner">
+  ⚠️ العرض حالياً ببيانات تجريبية (محاكاة تناوب البريك). أول ما يوصل فيد البصمة من الداتا سنتر، هيتم استبدال دالة <code>getLiveAttendance()</code> فقط ببيانات الحضور الفعلية من غير أي تغيير في الشكل.
+</div>
+
+<div class="wrap">
+
+  <div class="summary">
+    <div class="stat"><div class="n" id="statPresent">-</div><div class="l">حاضر الآن</div></div>
+    <div class="stat"><div class="n" id="statRequired">-</div><div class="l">المطلوب الآن</div></div>
+    <div class="stat"><div class="n" id="statBreak">-</div><div class="l">في بريك</div></div>
+    <div class="stat warn"><div class="n" id="statAlerts">-</div><div class="l">تنبيهات حالية</div></div>
+  </div>
+
+  <div class="time-panel">
+    <span class="lbl">⏱ معاينة وقت اليوم:</span>
+    <input type="range" id="timeSlider" min="0" max="1439" value="480">
+    <span class="lbl" id="timeSliderLabel">08:00</span>
+  </div>
+
+  <div class="floor" id="floorGrid"></div>
+
+  <div class="alerts-panel">
+    <h3>🚨 التنبيهات <span id="alertCountBadge" style="font-size:11px;background:var(--red);color:#fff;border-radius:10px;padding:2px 8px;"></span></h3>
+    <div id="alertsList"></div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>⚙️ إعداد المان باور لكل قسم</h3>
+      <button class="modal-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body" id="settingsBody"></div>
+    <div class="save-bar"><button class="save-btn" onclick="saveSettings()">حفظ الإعدادات</button></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   طبقة البيانات — القسم "الألبان والتجهيزات والتفويل" فيه
+   أسماء وبوزيشنات حقيقية من ملف "اجازات شيفات.xlsx".
+   باقي الأقسام (بقالة، خضار وفاكهة، مخبوزات، كاشير) بيانات
+   مثال قابلة للتعديل لحد ما نوصلها بروستر الفرع الكامل.
+========================================================= */
+
+const SHIFTS = { 'صباحي': [6,14], 'بتوين': [14,22], 'ليلي': [22,30] }; // 30 = 06:00 next day
+
+function emp(name, role, shift) { return { name, role, shift }; }
+
+const DEPARTMENTS_SEED = [
+  {
+    id: 'dairy', name: 'الألبان والأجبان والتجهيزات', icon: '🧀',
+    requiredPerHour: {6:6,7:7,8:7,9:7,10:5,11:5,12:5,13:5,14:6,15:6,16:6,17:6,18:6,19:6,20:5,21:5,22:5,23:5,0:3,1:3,2:3,3:3,4:3,5:3},
+    breakRotation: 2,
+    employees: [
+      emp('يوسف اشرف محمد محمد','شيف اول تلاجة','بتوين'),
+      emp('نبيل محمد داوود','شيف اول تلاجة','صباحي'),
+      emp('عبد الله ابراهيم عبد الستار','شيف تلاجة','صباحي'),
+      emp('عصام على سويلم','شيف تلاجة','صباحي'),
+      emp('شريف سعد على','شيف تلاجة','صباحي'),
+      emp('محمود سعيد ابراهيم','ليدر قسم تجهيزات','صباحي'),
+      emp('مازن','تجهيزات','صباحي'),
+      emp('حازم عبد المنعم ابراهيم','تجهيزات','بتوين'),
+      emp('عمر عبد الجيد عبد الستار الليبى','تفويل','صباحي'),
+      emp('مروان','تفويل','صباحي'),
+      emp('أسامة','تفويل','بتوين'),
+      emp('سندس علاء عيد','موظف فريق اعداد','صباحي'),
+      emp('ايهاب احمد ابراهيم سكر','شيف اول تلاجة','ليلي'),
+      emp('محمود محمد محمود كارميلا','شيف اول تلاجة','ليلي'),
+      emp('حسن خالد حسن','شيف تلاجة','ليلي'),
+      emp('عبد الرحمن علي حسن عبد الرازق','شيف تلاجة','ليلي'),
+      emp('عبدالله مسعود سعيد','شيف تلاجة','ليلي'),
+      emp('شهاب','شيف تلاجة','ليلي'),
+      emp('محمد زكريا','شيف تلاجة','ليلي'),
+      emp('مهند احمد عبد الحكيم','تفويل','ليلي'),
+      emp('احمد عثمان عبد الوهاب','تفويل','ليلي'),
+      emp('حسام','تفويل','ليلي'),
+    ]
+  },
+  {
+    id: 'grocery', name: 'البقالة', icon: '🛒',
+    requiredPerHour: {6:5,7:7,8:7,9:7,10:5,11:5,12:5,13:5,14:5,15:5,16:6,17:6,18:6,19:6,20:5,21:5,22:4,23:3,0:2,1:2,2:2,3:2,4:2,5:2},
+    breakRotation: 2,
+    employees: [
+      emp('موظف بقالة ١','أمين بقالة','صباحي'),
+      emp('موظف بقالة ٢','أمين بقالة','صباحي'),
+      emp('موظف بقالة ٣','أمين بقالة','صباحي'),
+      emp('موظف بقالة ٤','أمين بقالة','صباحي'),
+      emp('موظف بقالة ٥','أمين بقالة','بتوين'),
+      emp('موظف بقالة ٦','أمين بقالة','بتوين'),
+      emp('موظف بقالة ٧','ليدر بقالة','بتوين'),
+    ]
+  },
+  {
+    id: 'produce', name: 'الخضار والفاكهة', icon: '🍉',
+    requiredPerHour: {6:4,7:5,8:5,9:5,10:4,11:4,12:4,13:4,14:4,15:4,16:5,17:5,18:5,19:5,20:4,21:3,22:2,23:2,0:1,1:1,2:1,3:1,4:1,5:1},
+    breakRotation: 1,
+    employees: [
+      emp('موظف خضار ١','فرز وتعبئة','صباحي'),
+      emp('موظف خضار ٢','فرز وتعبئة','صباحي'),
+      emp('موظف خضار ٣','بائع','بتوين'),
+      emp('موظف خضار ٤','بائع','بتوين'),
+      emp('ليدر خضار وفاكهة','ليدر قسم','بتوين'),
+    ]
+  },
+  {
+    id: 'bakery', name: 'المخبوزات والأفران', icon: '🥖',
+    requiredPerHour: {6:5,7:6,8:6,9:6,10:5,11:5,12:5,13:5,14:5,15:5,16:6,17:6,18:6,19:5,20:4,21:3,22:2,23:2,0:2,1:2,2:2,3:2,4:2,5:3},
+    breakRotation: 2,
+    employees: [
+      emp('شيف مخبوزات','شيف أول','صباحي'),
+      emp('موظف أفران ١','فرن','صباحي'),
+      emp('موظف أفران ٢','فرن','صباحي'),
+      emp('موظف تعبئة ١','تعبئة وعرض','بتوين'),
+      emp('موظف تعبئة ٢','تعبئة وعرض','بتوين'),
+      emp('كاشير مخبوزات','كاشير قسم','بتوين'),
+    ]
+  },
+  {
+    id: 'cashier', name: 'الكاشير', icon: '💳',
+    requiredPerHour: {6:2,7:3,8:4,9:4,10:3,11:3,12:4,13:4,14:4,15:4,16:5,17:5,18:5,19:5,20:4,21:3,22:2,23:2,0:1,1:1,2:1,3:1,4:1,5:2},
+    breakRotation: 1,
+    employees: [
+      emp('كاشير ١','كاشير','صباحي'),
+      emp('كاشير ٢','كاشير','صباحي'),
+      emp('كاشير ٣','كاشير','بتوين'),
+      emp('كاشير ٤','كاشير','بتوين'),
+      emp('سوبرفايزر كاشير','سوبرفايزر','بتوين'),
+    ]
+  },
+];
+
+/* حمّل الإعدادات المحفوظة (مان باور مخصص) من localStorage لو موجودة */
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('staffmap_settings') || 'null');
+    if (!saved) return DEPARTMENTS_SEED;
+    return DEPARTMENTS_SEED.map(d => ({ ...d, requiredPerHour: saved[d.id]?.requiredPerHour || d.requiredPerHour, breakRotation: saved[d.id]?.breakRotation ?? d.breakRotation }));
+  } catch(e) { return DEPARTMENTS_SEED; }
+}
+let DEPARTMENTS = loadSettings();
+
+/* =========================================================
+   نقطة الربط بالبصمة الحقيقية لاحقاً:
+   استبدل جسم الدالة دي بنداء API/DB فعلي بيرجع نفس الشكل:
+   { employeeName: 'present' | 'break' | 'off' }
+   وقتها كل الواجهة هتشتغل ببيانات حقيقية زي ما هي.
+========================================================= */
+function getLiveAttendance(dept, minutesSinceMidnight) {
+  const hour = Math.floor(minutesSinceMidnight / 60) % 24;
+  const scheduled = dept.employees.filter(e => onShiftNow(e.shift, minutesSinceMidnight));
+  if (scheduled.length === 0) return { statuses: {}, scheduledCount: 0 };
+
+  const slotIndex = Math.floor(minutesSinceMidnight / 15);
+  const rot = Math.min(dept.breakRotation, Math.max(scheduled.length - 1, 0));
+  const breakSet = new Set();
+  for (let k = 0; k < rot; k++) {
+    breakSet.add(scheduled[(slotIndex + k) % scheduled.length].name);
+  }
+  const statuses = {};
+  dept.employees.forEach(e => {
+    if (!scheduled.includes(e)) { statuses[e.name] = 'off'; return; }
+    statuses[e.name] = breakSet.has(e.name) ? 'break' : 'present';
+  });
+  return { statuses, scheduledCount: scheduled.length };
+}
+
+function onShiftNow(shift, minutesSinceMidnight) {
+  const range = SHIFTS[shift] || SHIFTS['صباحي'];
+  const hour = minutesSinceMidnight / 60;
+  const [s,e] = range;
+  if (e <= 24) return hour >= s && hour < e;
+  // overnight shift wraps past midnight
+  return hour >= s || hour < (e - 24);
+}
+
+/* =========================================================
+   المحاكاة / الوقت
+========================================================= */
+let liveMode = true;
+let currentMinutes = new Date().getHours()*60 + new Date().getMinutes();
+
+const slider = document.getElementById('timeSlider');
+const sliderLabel = document.getElementById('timeSliderLabel');
+const liveBtn = document.getElementById('liveBtn');
+const modeBadge = document.getElementById('modeBadge');
+
+function fmtTime(mins) {
+  const h = String(Math.floor(mins/60)%24).padStart(2,'0');
+  const m = String(mins%60).padStart(2,'0');
+  return h+':'+m;
+}
+
+slider.addEventListener('input', () => {
+  liveMode = false;
+  liveBtn.classList.remove('active');
+  currentMinutes = parseInt(slider.value,10);
+  sliderLabel.textContent = fmtTime(currentMinutes);
+  render();
+});
+
+liveBtn.addEventListener('click', () => {
+  liveMode = true;
+  liveBtn.classList.add('active');
+  render();
+});
+liveBtn.classList.add('active');
+
+function tick() {
+  if (liveMode) {
+    const now = new Date();
+    currentMinutes = now.getHours()*60 + now.getMinutes();
+    slider.value = currentMinutes;
+    sliderLabel.textContent = fmtTime(currentMinutes);
+    document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  } else {
+    document.getElementById('clockDisplay').textContent = fmtTime(currentMinutes) + ' (معاينة)';
+  }
+  render();
+}
+setInterval(tick, 5000);
+
+/* =========================================================
+   الرسم
+========================================================= */
+const initials = n => n.trim().split(' ').slice(0,2).map(w=>w[0]).join('');
+
+function render() {
+  const hour = Math.floor(currentMinutes/60) % 24;
+  const floor = document.getElementById('floorGrid');
+  floor.innerHTML = '';
+  let totalPresent = 0, totalRequired = 0, totalBreak = 0;
+  const alerts = [];
+
+  DEPARTMENTS.forEach(dept => {
+    const required = dept.requiredPerHour[hour] ?? 0;
+    const { statuses, scheduledCount } = getLiveAttendance(dept, currentMinutes);
+    const presentCount = Object.values(statuses).filter(s=>s==='present').length;
+    const breakCount = Object.values(statuses).filter(s=>s==='break').length;
+    totalPresent += presentCount; totalRequired += required; totalBreak += breakCount;
+
+    const expectedVisible = Math.max(required - dept.breakRotation, 0);
+    const short = presentCount < expectedVisible;
+    if (scheduledCount < required && required > 0) {
+      alerts.push({ dept: dept.name, type: 'critical', title: `${dept.name}: العدد المجدول أقل من المطلوب`, detail: `مجدول ${scheduledCount} موظف بس المطلوب ${required} في الساعة ${hour}:00` });
+    } else if (short) {
+      alerts.push({ dept: dept.name, type: 'warn', title: `${dept.name}: نقص فعلي عن الخطة`, detail: `الحاضر الآن ${presentCount} وكان المفروض حوالي ${expectedVisible} (بعد خصم تناوب البريك)` });
+    }
+
+    const card = document.createElement('div');
+    card.className = 'dept-card' + (short || scheduledCount < required ? ' shortage' : '');
+    card.innerHTML = `
+      <div class="dept-head">
+        <div class="dept-name">${dept.icon} ${dept.name}</div>
+        <div class="dept-count ${short?'short':''}">
+          <span class="present">${presentCount}</span> / <span class="req">${required}</span>
+        </div>
+      </div>
+      <div class="positions">
+        ${dept.employees.length === 0 ? '<div class="empty-dept">لا يوجد موظفين مسجلين</div>' :
+          dept.employees.map(e => {
+            const st = statuses[e.name] || 'off';
+            const label = st==='present' ? 'حاضر' : st==='break' ? 'بريك' : 'خارج الشيفت';
+            return `<div class="chip">
+                <div class="avatar ${st}">${initials(e.name)}</div>
+                <div class="chip-info">
+                  <div class="chip-name">${e.name}</div>
+                  <div class="chip-role">${e.role} · ${e.shift}</div>
+                </div>
+                <span class="chip-status ${st}">${label}</span>
+              </div>`;
+          }).join('')
+        }
+      </div>`;
+    floor.appendChild(card);
+  });
+
+  document.getElementById('statPresent').textContent = totalPresent;
+  document.getElementById('statRequired').textContent = totalRequired;
+  document.getElementById('statBreak').textContent = totalBreak;
+  document.getElementById('statAlerts').textContent = alerts.length;
+
+  const alertsList = document.getElementById('alertsList');
+  const badge = document.getElementById('alertCountBadge');
+  badge.textContent = alerts.length || '';
+  badge.style.display = alerts.length ? 'inline-block' : 'none';
+  if (alerts.length === 0) {
+    alertsList.innerHTML = `<div class="no-alerts"><div class="icon">✅</div>كل الأقسام مغطاة حسب الخطة</div>`;
+  } else {
+    alertsList.innerHTML = alerts.map(a => `
+      <div class="alert-item">
+        <div class="t">${a.title}</div>
+        <div class="d">${a.detail}</div>
+        <div class="time">الساعة ${fmtTime(currentMinutes)}</div>
+      </div>`).join('');
+  }
+}
+
+/* =========================================================
+   إعدادات المان باور
+========================================================= */
+function openSettings() {
+  const body = document.getElementById('settingsBody');
+  body.innerHTML = DEPARTMENTS.map(d => `
+    <div class="dept-setting" data-dept="${d.id}">
+      <h4>${d.icon} ${d.name}</h4>
+      <div class="hour-grid">
+        ${Array.from({length:24},(_,h)=>`
+          <div class="hour-cell">
+            <label>${h}:00</label>
+            <input type="number" min="0" data-hour="${h}" value="${d.requiredPerHour[h] ?? 0}">
+          </div>`).join('')}
+      </div>
+      <div class="rotation-row">
+        عدد الموظفين اللي بيطلعوا بريك في نفس الوقت:
+        <input type="number" min="0" class="rotation-input" value="${d.breakRotation}">
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+
+function saveSettings() {
+  const settings = {};
+  document.querySelectorAll('.dept-setting').forEach(el => {
+    const id = el.dataset.dept;
+    const requiredPerHour = {};
+    el.querySelectorAll('[data-hour]').forEach(inp => { requiredPerHour[inp.dataset.hour] = parseInt(inp.value,10) || 0; });
+    const breakRotation = parseInt(el.querySelector('.rotation-input').value,10) || 0;
+    settings[id] = { requiredPerHour, breakRotation };
+  });
+  localStorage.setItem('staffmap_settings', JSON.stringify(settings));
+  DEPARTMENTS = loadSettings();
+  closeSettings();
+  render();
+}
+
+tick();
+</script>
+</body>
+</html>
