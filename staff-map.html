@@ -309,14 +309,17 @@ const BRANCH_DATA = {"البيطاش الرئيسي": {"قسم البقاله": 
 const SHEET_ID = "15NeasovzgM3FsqjM_MiL20jPdyQmR8jpp12bGJFFflU";
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
 const SHIFT_ORDER = ['صباحي', 'بتوين', 'ليلي'];
-const SHIFT_LABEL = { 'صباحي': '🌅 صباحي (6ص–2م)', 'بتوين': '🌆 بتوين (2م–10م)', 'ليلي': '🌙 ليلي (10م–6ص)' };
-const SHIFT_WINDOWS = { 'صباحي': [6,14], 'بتوين': [14,22], 'ليلي': [22,30] };
+const SHIFT_LABEL = { 'صباحي': '🌅 صباحي (7ص–5م)', 'بتوين': '🌆 بتوين (مرن، بدون وقت ثابت)', 'ليلي': '🌙 ليلي (5م–4ص)' };
+/* بتوين مالوش مواعيد ثابتة فمش موجود هنا خالص — بيتعامل معاه كحضور
+   عادي في أي وقت بمجرد ما البصمة تقول "حضور"، من غير قيد وقت. */
+const SHIFT_WINDOWS = { 'صباحي': [7,17], 'ليلي': [17,28] };
 
 let lastSyncTime = new Date();
 let currentBranch = Object.keys(BRANCH_DATA)[0];
 
 
 function onShiftNow(shift, minutesSinceMidnight) {
+  if (shift === 'بتوين') return true; // مستقل عن الوقت — يحضر عادي في أي ساعة
   const range = SHIFT_WINDOWS[shift] || SHIFT_WINDOWS['صباحي'];
   const hour = minutesSinceMidnight / 60;
   const [s,e] = range;
@@ -325,13 +328,11 @@ function onShiftNow(shift, minutesSinceMidnight) {
 }
 function getActiveShiftName(now) {
   const h = now.getHours();
-  if (h >= 6 && h < 14) return 'صباحي';
-  if (h >= 14 && h < 22) return 'بتوين';
-  return 'ليلي';
+  return (h >= 7 && h < 17) ? 'صباحي' : 'ليلي';
 }
 function getShiftDateKey(shiftName, now) {
   const d = new Date(now);
-  if (shiftName === 'ليلي' && d.getHours() < 6) d.setDate(d.getDate() - 1);
+  if (shiftName === 'ليلي' && d.getHours() < 7) d.setDate(d.getDate() - 1);
   return d.toISOString().slice(0, 10);
 }
 function shiftLogKey(shiftName, now) { return `staffmap_shiftlog_${currentBranch}_${shiftName}_${getShiftDateKey(shiftName, now)}`; }
@@ -740,7 +741,7 @@ function render() {
   const minutesNow = now.getHours()*60 + now.getMinutes();
   const activeShift = getActiveShiftName(now);
   if (!currentShiftFilter) currentShiftFilter = activeShift;
-  const isLiveShift = currentShiftFilter === activeShift;
+  const isLiveShift = currentShiftFilter === 'بتوين' || currentShiftFilter === activeShift;
 
   const allDepts = BRANCH_DATA[currentBranch] || {};
   logCurrentShiftSnapshot(allDepts, minutesNow);
