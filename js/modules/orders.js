@@ -164,13 +164,28 @@ function getOnHand(sku) {
 }
 
 function getSuggestedQty(sku) {
+  const b = getSuggestedQtyBreakdown(sku);
+  return b ? b.target : null;
+}
+
+// نفس حساب getSuggestedQty بالظبط، بس راجع كل الأرقام اللي دخلت في الحساب
+// عشان تقدر تتأكد بعينك إن المقترح صح (متوسط اليوم × أيام التغطية − الموجود)
+function getSuggestedQtyBreakdown(sku) {
   const onHand = getOnHand(sku);
   if (onHand === null) return null;
   const dailyAvg = getLearnedDailyAvg(sku);
   if (dailyAvg === null) return null; // مفيش تاريخ حقيقي كفاية لسه لنفس يوم الأسبوع ده
   const info = getActiveSkuMap()[sku];
-  const target = dailyAvg * getCoverageDays(info && info.dept) - onHand;
-  return target > 0 ? target : 0;
+  const coverageDays = getCoverageDays(info && info.dept);
+  const rawTarget = dailyAvg * coverageDays - onHand;
+  const weekday = weekdayOfOrderDate();
+  const promoKey = todayHasPromo ? 1 : 0;
+  const hasLearnedBucket = !!(learnedBuckets[sku] && learnedBuckets[sku][weekday] && learnedBuckets[sku][weekday][promoKey]);
+  return {
+    dailyAvg, coverageDays, onHand,
+    target: rawTarget > 0 ? rawTarget : 0,
+    source: hasLearnedBucket ? 'learned' : 'foodics'
+  };
 }
 
 function formatNum(n) {
@@ -484,7 +499,12 @@ function renderApp() {
       const suggested = getSuggestedQty(p.sku);
       let onHandText = onHand !== null ? `<span class="sales-info-big">📦 الموجود: <span class="sales-val-big">${formatNum(onHand)}</span></span>` : '';
       if (suggested !== null) {
+        const sb = getSuggestedQtyBreakdown(p.sku);
         onHandText += `<span class="sales-info-big">🎯 المقترح: <span class="sales-val-big">${formatNum(suggested)}</span></span>`;
+        if (sb) {
+          const srcLabel = sb.source === 'learned' ? 'من طلبيات الفرع' : 'من مبيعات فوديكس (أغسطس)';
+          onHandText += `<span class="sales-info" style="color:var(--muted,#888)" title="${srcLabel}">(متوسط ${formatNum(sb.dailyAvg)} × تغطية ${formatNum(sb.coverageDays)} يوم − موجود ${formatNum(sb.onHand)}) — ${srcLabel}</span>`;
+        }
         if (isSuggestionAnomalyAdjusted(p.sku)) {
           onHandText += `<span class="sales-info" style="color:#d68910">⚠️ ضغط غير معتاد في آخر ${todayHasPromo ? 'يوم بعرض' : 'يوم من غير عرض'} زي النهاردة — المقترح اتعدّل</span>`;
         }
@@ -908,7 +928,12 @@ function renderProductsOnly() {
       const suggested = getSuggestedQty(p.sku);
       let onHandText = onHand !== null ? `<span class="sales-info-big">📦 الموجود: <span class="sales-val-big">${formatNum(onHand)}</span></span>` : '';
       if (suggested !== null) {
+        const sb = getSuggestedQtyBreakdown(p.sku);
         onHandText += `<span class="sales-info-big">🎯 المقترح: <span class="sales-val-big">${formatNum(suggested)}</span></span>`;
+        if (sb) {
+          const srcLabel = sb.source === 'learned' ? 'من طلبيات الفرع' : 'من مبيعات فوديكس (أغسطس)';
+          onHandText += `<span class="sales-info" style="color:var(--muted,#888)" title="${srcLabel}">(متوسط ${formatNum(sb.dailyAvg)} × تغطية ${formatNum(sb.coverageDays)} يوم − موجود ${formatNum(sb.onHand)}) — ${srcLabel}</span>`;
+        }
         if (isSuggestionAnomalyAdjusted(p.sku)) {
           onHandText += `<span class="sales-info" style="color:#d68910">⚠️ ضغط غير معتاد في آخر ${todayHasPromo ? 'يوم بعرض' : 'يوم من غير عرض'} زي النهاردة — المقترح اتعدّل</span>`;
         }
