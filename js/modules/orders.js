@@ -354,6 +354,23 @@ let orderHistory = []; // سجل الطلبيات
 let stockLevels = {}; // sku الأساسي -> الكمية الموجودة بالفرع (من تقرير الجرد اليومي من فوديكس)
 let stockUpdatedAt = null; // وقت آخر رفع لملف الجرد
 let learnedBuckets = {}; // sku -> weekday -> promoKey(0/1) -> {value, anomalyAdjusted} — متعلم من التاريخ الحقيقي، مش مرتبط بتاريخ ميلادي
+let foodicsWeekdayAvg = {}; // sku -> pyWeekday(0=الاثنين..6=الأحد) -> avg_quantity — من بيانات فوديكس التاريخية (جدول order_weekday_avg)، احتياطي لحد ما learnedBuckets يتراكم كفاية
+
+// وقت مبكر جدًا (قبل الساعة 6 الصبح) يعني إن الطلبية دي فعليًا لتغطية بكرة،
+// مش النهاردة — فتاريخ الطلبية الافتراضي يبقى بكرة مش النهاردة
+function defaultOrderDate() {
+  const now = new Date();
+  const d = new Date(now);
+  if (now.getHours() < 6) d.setDate(d.getDate() + 1);
+  return d.toISOString().split('T')[0];
+}
+
+// يوم الأسبوع بطريقة JS (0=الأحد..6=السبت) لتاريخ الطلبية المختار، من غير
+// مشاكل فروق التوقيت (parsing "YYYY-MM-DD" بمنتصف النهار UTC)
+function weekdayOfOrderDate() {
+  const d = orderDate ? new Date(orderDate + 'T12:00:00') : new Date();
+  return d.getDay();
+}
 let todayHasPromo = false; // فيه عرض النهاردة؟ بيتسأل قبل الطلبية وبيتحفظ مع جرد اليوم
 const DEFAULT_COVERAGE_DAYS = 1;
 let defaultCoverageDays = parseFloat(localStorage.getItem('barq_default_coverage_days')) || DEFAULT_COVERAGE_DAYS; // القيمة العامة اللي بتتطبق على أي قسم لسه مالوش رقم خاص بيه
@@ -363,7 +380,7 @@ try { coverageDaysByDept = JSON.parse(localStorage.getItem('barq_coverage_days_b
 // استكمال استعادة الجلسة (بعد إعلان كل المتغيرات فوق) — بيرجع آخر شاشة والطلبية اللي كانت شغالة
 if (currentUser) {
   currentView = (_restoredSession && _restoredSession.view) || (currentUser.role === 'staff' ? 'data' : 'order');
-  orderDate = new Date().toISOString().split('T')[0];
+  orderDate = defaultOrderDate();
   loadFromStorage();
   loadStockFromStorage();
   loadTodayPromo();
@@ -822,7 +839,7 @@ function doLogin() {
     currentUser = { ...user };
     activeTab = getActiveTabs()[0]?.id;
     quantities = {};
-    orderDate = new Date().toISOString().split('T')[0];
+    orderDate = defaultOrderDate();
     loadStockFromStorage();
     loadTodayPromo();
     // تحديد الشاشة الأولى حسب الدور
@@ -2246,14 +2263,19 @@ const SB_HEADERS = {
 // ونبوّبه حسب (يوم الأسبوع + فيه عرض ولا لأ) — مش تاريخ ميلادي، وكل حالة بتتعلم من نفسها بمرور الوقت.
 // بنحتفظ بكل البوابات (مش بس رقم النهاردة) عشان لو الموظف بدّل تفعيل العرض، الاقتراح يتغير فورًا من غير ما نطلب من السيرفر تاني.
 function getLearnedDailyAvg(sku) {
-  const weekday = new Date().getDay();
+  const weekday = weekdayOfOrderDate();
   const promoKey = todayHasPromo ? 1 : 0;
   const bucket = learnedBuckets[sku] && learnedBuckets[sku][weekday] && learnedBuckets[sku][weekday][promoKey];
-  return bucket ? bucket.value : null;
+  if (bucket) return bucket.value;
+  // لسه مفيش تعلّم كفاية من طلبيات الفرع نفسه (بيانات جديدة) — استخدم
+  // متوسط فوديكس التاريخي (مبيعات حقيقية) لنفس يوم الأسبوع بدل ما ترجع فاضية
+  const pyWeekday = (weekday + 6) % 7; // JS 0=الأحد..6=السبت -> Python 0=الاثنين..6=الأحد
+  const fAvg = foodicsWeekdayAvg[sku] && foodicsWeekdayAvg[sku][pyWeekday];
+  return (fAvg != null) ? fAvg : null;
 }
 
 function isSuggestionAnomalyAdjusted(sku) {
-  const weekday = new Date().getDay();
+  const weekday = weekdayOfOrderDate();
   const promoKey = todayHasPromo ? 1 : 0;
   const bucket = learnedBuckets[sku] && learnedBuckets[sku][weekday] && learnedBuckets[sku][weekday][promoKey];
   return !!(bucket && bucket.anomalyAdjusted);
@@ -2266,9 +2288,32 @@ function isAnomalousDeviation(value, baseline, sku) {
   return Math.abs(value - baseline) >= threshold;
 }
 
+// جدول order_weekday_avg بيستخدم أسماء فروع فوديكس (زي "EL Betash") مش
+// بالضرورة نفس اسم الفرع المسجّل في برق (currentUser.branch) — خريطة تحويل
+// بسيطة، وممكن تتوسع لاحقًا لو أسماء فروع فوديكس أكتر
+const FOODICS_BRANCH_ALIASES = {
+  'عين شمس': 'Ain Shams',
+  'السمليهي': 'EL Betash'
+};
+async function fetchFoodicsWeekdayAvg(branch) {
+  const foodicsBranch = FOODICS_BRANCH_ALIASES[branch] || branch;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/order_weekday_avg?branch=eq.${encodeURIComponent(foodicsBranch)}&select=sku,weekday,avg_quantity`, { headers: SB_HEADERS });
+    if (!res.ok) return;
+    const rows = await res.json();
+    const map = {};
+    rows.forEach(r => {
+      if (!map[r.sku]) map[r.sku] = {};
+      map[r.sku][r.weekday] = parseFloat(r.avg_quantity) || 0;
+    });
+    foodicsWeekdayAvg = map;
+  } catch (e) { console.error('[fetchFoodicsWeekdayAvg]', e); }
+}
+
 async function refreshLearnedAverages() {
   if (!currentUser) return;
   const branch = currentUser.branch;
+  fetchFoodicsWeekdayAvg(branch).then(render); // مش جزء من الـ Promise.all تحت — بيعمل render لوحده لما يخلص عشان المقترح يظهر أول ما البيانات توصل
   try {
     const [snapRes, ordersRes] = await Promise.all([
       fetch(`${SB_URL}/rest/v1/inventory_snapshots?branch=eq.${encodeURIComponent(branch)}&select=snapshot_date,data&order=snapshot_date.asc`, { headers: SB_HEADERS }),
@@ -3871,7 +3916,7 @@ function syncFromShellAuth() {
     currentUser = Object.assign({}, mapped);
     activeTab = (getActiveTabs()[0] || {}).id;
     quantities = {};
-    orderDate = new Date().toISOString().split('T')[0];
+    orderDate = defaultOrderDate();
     loadStockFromStorage();
     loadTodayPromo();
     currentView = (mapped.role === 'staff') ? 'data' : 'order';
