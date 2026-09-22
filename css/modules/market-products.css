@@ -1,0 +1,57 @@
+/* موديول "إدارة منتجات الكاشير" — نفس متغيرات shared.css، مفيش ألوان جديدة */
+
+.mp-mod { max-width: 1100px; }
+
+.mp-header { margin-bottom: 14px; }
+.mp-header h2 { font-size: 19px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.mp-header .mp-sub { font-size: 12.5px; color: var(--muted); }
+
+.mp-filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.mp-input, .mp-select {
+  padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 9px;
+  background: var(--bg); color: var(--text); font-family: 'Cairo', sans-serif; font-size: 13px; outline: none;
+}
+.mp-input:focus, .mp-select:focus { border-color: var(--accent); }
+.mp-filters .mp-input { min-width: 220px; }
+
+.mp-btn {
+  padding: 9px 16px; border-radius: 9px; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.mp-btn:hover { border-color: var(--accent); }
+.mp-btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.mp-btn-primary:hover { background: var(--primary); border-color: var(--primary); }
+.mp-btn-sm { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--border); background: #fff; font-family: 'Cairo', sans-serif; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+.mp-btn-sm:hover { border-color: var(--accent); }
+.mp-btn-danger { color: var(--red); border-color: #f3c9c6; }
+.mp-btn-danger:hover { border-color: var(--red); }
+
+.mp-loading, .mp-empty {
+  text-align: center; color: var(--muted); padding: 40px 20px; background: var(--card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.mp-hint { text-align: center; color: var(--muted); font-size: 11.5px; padding: 10px; }
+
+.mp-table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.mp-table th, .mp-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: right; }
+.mp-table th { background: var(--accent-soft); color: var(--primary); font-weight: 700; white-space: nowrap; }
+.mp-table td.num-col, .mp-table th.num-col { text-align: left; }
+.mp-name { font-weight: 700; color: var(--text); }
+.mp-sku { font-size: 10.5px; color: var(--muted); }
+
+.mp-chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+.mp-chip-info { background: var(--accent-soft); color: var(--accent); border: none; }
+.mp-chip-bad { background: #fdeeed; color: var(--red); border: none; }
+
+.mp-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(7,19,16,.45); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.mp-modal-overlay.open { display: flex; }
+.mp-modal { background: var(--card); border-radius: var(--radius); max-width: 420px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px; }
+.mp-modal h3 { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 14px; }
+.mp-flabel { display: block; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.mp-flabel .mp-input, .mp-flabel .mp-select { width: 100%; margin-top: 5px; box-sizing: border-box; }
+.mp-modal-actions { display: flex; gap: 8px; margin-top: 6px; }
+.mp-modal-actions .mp-btn { flex: 1; }
+
+@media (max-width: 700px) {
+  .mp-filters .mp-input { min-width: 0; flex: 1; }
+}

@@ -38,6 +38,7 @@ var BARQ_SECTIONS = [
   { key: 'dept-mo3mal',   label: 'تحضير — معمل',              icon: '🏭' },
   { key: 'reports', label: 'تقارير', icon: '📊' },
   { key: 'decision-kitchen', label: 'مطبخ القرار', icon: '🍳' },
+  { key: 'market-products', label: 'إدارة منتجات الكاشير', icon: '🏪' },
   { key: 'access-list', label: 'المستخدمين والصلاحيات', icon: '👥' },
   { key: 'support-admin', label: 'بلاغات المستخدمين', icon: '🆘' }
 ];

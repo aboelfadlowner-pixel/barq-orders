@@ -98,7 +98,6 @@ button,input{font-family:'Cairo',sans-serif}
 
 <div class="toolbar">
   <button class="btn btn-ghost" onclick="loadFullMarketCatalog()">📥 تحميل كتالوج السوق من السيرفر</button>
-  <button class="btn btn-ghost" onclick="openAddProductModal()">➕ إضافة منتج</button>
   <label class="btn btn-ghost" style="display:inline-block">
     📂 رفع شيت المنتجات
     <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleImport(event)">
@@ -580,8 +579,9 @@ function handleScannedBarcode(raw){
   var statusEl = document.getElementById('scannerStatus');
   if (idx === -1) {
     if (statusEl) statusEl.textContent = '⚠️ باركود مش موجود: ' + code;
-    toast('⚠️ الباركود ده مش موجود في الكتالوج');
-    openAddProductModal(code);
+    // شاشة البيع دي عارضة بس — أي منتج ناقص لازم يتضاف من لوحة التحكم
+    // "إدارة منتجات الكاشير" جوه تطبيق برق، مش من هنا
+    toast('⚠️ الباركود ده مش موجود — ضيفه من "إدارة منتجات الكاشير" في برق');
     return;
   }
   if (statusEl) statusEl.textContent = '🔫 السكانر جاهز — امسح أي باركود';
@@ -589,84 +589,6 @@ function handleScannedBarcode(raw){
   toast('🖨 اتطبعت: ' + PRODUCTS[idx].name);
 }
 
-// ===== إضافة منتج جديد (زي شاشة إضافة منتج في فوديكس) =====
-// بتحفظ المنتج في dc_products (كتالوج فوديكس الحقيقي، مشترك بين كل
-// الأجهزة) مش بس محليًا — عشان لو حد تاني حمّل الكتالوج بعدك يلاقيه
-function openAddProductModal(prefillBarcode){
-  var catOptions = '<option value="">— بدون قسم —</option>' +
-    CATEGORIES.map(function(c){ return '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>'; }).join('');
-  var backdrop = document.createElement('div');
-  backdrop.className = 'modal-backdrop';
-  backdrop.id = 'addProductModal';
-  backdrop.innerHTML =
-    '<div class="modal">' +
-      '<div class="mname">➕ إضافة منتج جديد</div>' +
-      '<div class="catlist" style="text-align:right;gap:8px">' +
-        '<label style="font-size:12px;color:#666">اسم الصنف<br>' +
-          '<input type="text" id="ap-name" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ccc;font-size:14px" placeholder="مثلاً: كوكاكولا 1.5 لتر"></label>' +
-        '<label style="font-size:12px;color:#666">الباركود<br>' +
-          '<input type="text" id="ap-barcode" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ccc;font-size:14px" value="' + escapeHtml(prefillBarcode || '') + '" placeholder="امسحه بالسكانر أو اكتبه"></label>' +
-        '<label style="font-size:12px;color:#666">SKU (اختياري — لو فاضي هيتولّد تلقائي)<br>' +
-          '<input type="text" id="ap-sku" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ccc;font-size:14px"></label>' +
-        '<label style="font-size:12px;color:#666">السعر<br>' +
-          '<input type="number" step="0.01" id="ap-price" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ccc;font-size:14px" placeholder="0"></label>' +
-        '<label style="font-size:12px;color:#666">القسم<br>' +
-          '<select id="ap-cat" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ccc;font-size:14px">' + catOptions + '</select></label>' +
-      '</div>' +
-      '<div class="modal-actions">' +
-        '<button class="modal-cancel" onclick="closeAddProductModal()">إلغاء</button>' +
-        '<button class="btn" style="background:#2d8653;color:#fff;border:none" onclick="submitAddProduct()">💾 حفظ</button>' +
-      '</div>' +
-    '</div>';
-  document.body.appendChild(backdrop);
-  setTimeout(function(){ var el = document.getElementById('ap-name'); if (el) el.focus(); }, 50);
-}
-function closeAddProductModal(){
-  var m = document.getElementById('addProductModal');
-  if (m) m.remove();
-}
-function submitAddProduct(){
-  var name = (document.getElementById('ap-name').value || '').trim();
-  var barcode = cleanBarcodeValue(document.getElementById('ap-barcode').value || '');
-  var sku = cleanBarcodeValue(document.getElementById('ap-sku').value || '');
-  var price = parseFloat(document.getElementById('ap-price').value) || 0;
-  var catId = document.getElementById('ap-cat').value || '';
-  if (!name) { alert('لازم تكتب اسم الصنف'); return; }
-  if (!barcode && !sku) { alert('لازم باركود أو SKU على الأقل'); return; }
-  if (!isValidBarcodeText(barcode)) barcode = '';
-  if (!isValidBarcodeText(sku)) sku = '';
-  if (!sku) sku = 'local-' + Date.now();
-  var cat = CATEGORIES.find(function(c){ return c.id === catId; });
-  var department = cat ? cat.name : null;
-
-  var row = { sku: sku, name: name, barcode: barcode || null, price: price, is_active: true };
-  fetch(SB_MARKET_URL + '/rest/v1/dc_products', {
-    method: 'POST', headers: Object.assign({}, SB_MARKET_HEADERS, { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-    body: JSON.stringify(row)
-  }).then(function(res){
-    if (!res.ok) throw new Error('insert dc_products failed: ' + res.status);
-    if (department) {
-      return fetch(SB_MARKET_URL + '/rest/v1/sku_departments', {
-        method: 'POST', headers: Object.assign({}, SB_MARKET_HEADERS, { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-        body: JSON.stringify({ sku: sku, department: department })
-      });
-    }
-  }).then(function(){
-    var key = barcode || sku;
-    var newProduct = { name: name, barcode: barcode, sku: sku, price: price, department: department };
-    PRODUCTS.push(newProduct);
-    localStorage.setItem(LS_KEY, JSON.stringify(PRODUCTS));
-    if (catId) PRODCATS[key] = catId;
-    savePRODCATS();
-    closeAddProductModal();
-    renderTabs();
-    renderGrid();
-    toast('✅ اتضاف الصنف "' + name + '" وحفظ في السيرفر');
-  }).catch(function(e){
-    console.error('[submitAddProduct]', e);
-    alert('حصل خطأ وإحنا بنحفظ الصنف في السيرفر — اتأكد من الاتصال بالإنترنت وحاول تاني');
-  });
-}
 
 var QTY_TARGET = null;
 var QTY_VALUE = '1';
