@@ -46,7 +46,7 @@ var BARQ_MARKET_PRODUCTS = (function () {
   function loadProducts() {
     loading = true;
     render();
-    var path = 'dc_products?select=sku,name,barcode,price,is_active&order=name.asc&limit=' + PAGE_SIZE;
+    var path = 'dc_products?select=sku,name,barcode,price,unit,is_active&order=name.asc&limit=' + PAGE_SIZE;
     if (search) path += '&name=ilike.*' + encodeURIComponent(search) + '*';
     return sb(path).then(function (products) {
       var skus = products.map(function (p) { return "'" + p.sku.replace(/'/g, "''") + "'"; });
@@ -76,6 +76,7 @@ var BARQ_MARKET_PRODUCTS = (function () {
     root.innerHTML =
       '<div class="mp-header"><h2>🏪 إدارة منتجات الكاشير</h2><p class="mp-sub">المصدر المركزي لكتالوج شاشة البيع — أي تعديل هنا بيظهر تلقائي في كل شاشات الكاشير.</p></div>' +
       '<div class="mp-filters">' +
+      '<input class="mp-input mp-scan-input" id="mp-scan" placeholder="📷 امسح الباركود... (يفتح تعديل لو موجود، إضافة لو جديد)">' +
       '<input class="mp-input" id="mp-search" placeholder="🔍 دور بالاسم..." value="' + esc(search) + '">' +
       '<select class="mp-select" id="mp-dept">' + deptOptions + '</select>' +
       '<button class="mp-btn mp-btn-primary" id="mp-add">➕ إضافة منتج</button>' +
@@ -87,6 +88,15 @@ var BARQ_MARKET_PRODUCTS = (function () {
     document.getElementById('mp-dept').addEventListener('change', function (e) { deptFilter = e.target.value; loadProducts(); });
     document.getElementById('mp-add').addEventListener('click', function () { openProductModal(null); });
     document.getElementById('mp-overlay').addEventListener('click', function (e) { if (e.target.id === 'mp-overlay') closeModal(); });
+    var scanEl = document.getElementById('mp-scan');
+    scanEl.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      var code = scanEl.value.trim();
+      scanEl.value = '';
+      if (code) scanBarcode(code);
+    });
+    scanEl.focus();
 
     renderTable();
   }
@@ -108,7 +118,7 @@ var BARQ_MARKET_PRODUCTS = (function () {
     var body = rows.map(function (r) {
       return '<tr' + (r.is_active === false ? ' style="opacity:.5"' : '') + '>' +
         '<td><div class="mp-name">' + esc(r.name) + (r.is_active === false ? ' <span class="mp-chip mp-chip-bad">معطّل</span>' : '') + '</div><div class="mp-sku">' + esc(r.sku) + (r.barcode ? ' · ' + esc(r.barcode) : '') + '</div></td>' +
-        '<td class="num-col num">' + fmt(r.price) + ' ج.م</td>' +
+        '<td class="num-col num">' + fmt(r.price) + ' ج.م<div class="mp-unit">' + esc(r.unit || 'قطعة') + '</div></td>' +
         '<td>' + (r.department ? '<span class="mp-chip mp-chip-info">' + esc(r.department) + '</span>' : '<span class="mp-chip">بدون قسم</span>') + '</td>' +
         '<td><button class="mp-btn-sm" data-sku="' + esc(r.sku) + '" data-act="edit">✏️ تعديل</button> ' +
         '<button class="mp-btn-sm mp-btn-danger" data-sku="' + esc(r.sku) + '" data-act="toggle">' + (r.is_active === false ? '↩️ تفعيل' : '🚫 تعطيل') + '</button></td>' +
@@ -138,17 +148,24 @@ var BARQ_MARKET_PRODUCTS = (function () {
     });
   }
 
-  function openProductModal(row) {
+  var COMMON_UNITS = ['قطعة', 'كيلو', 'جرام', 'لتر', 'كرتونة', 'علبة', 'كيس'];
+
+  function openProductModal(row, prefillBarcode) {
     var isEdit = !!row;
     var deptOptions = '<option value="">— بدون قسم —</option>' + departments.map(function (d) {
       return '<option value="' + esc(d) + '"' + (row && row.department === d ? ' selected' : '') + '>' + esc(d) + '</option>';
     }).join('');
+    var currentUnit = row ? (row.unit || 'قطعة') : 'قطعة';
+    var unitOptions = COMMON_UNITS.map(function (u) {
+      return '<option value="' + esc(u) + '"' + (u === currentUnit ? ' selected' : '') + '>' + esc(u) + '</option>';
+    }).join('');
     document.getElementById('mp-modal-content').innerHTML =
       '<h3>' + (isEdit ? '✏️ تعديل منتج' : '➕ إضافة منتج جديد') + '</h3>' +
+      '<label class="mp-flabel">الباركود<input type="text" id="mpf-barcode" class="mp-input" value="' + esc(row ? row.barcode || '' : (prefillBarcode || '')) + '" autofocus></label>' +
       '<label class="mp-flabel">اسم الصنف<input type="text" id="mpf-name" class="mp-input" value="' + esc(row ? row.name : '') + '"></label>' +
-      '<label class="mp-flabel">الباركود<input type="text" id="mpf-barcode" class="mp-input" value="' + esc(row ? row.barcode || '' : '') + '"></label>' +
       '<label class="mp-flabel">SKU' + (isEdit ? '' : ' (اختياري — لو فاضي هيتولّد تلقائي)') + '<input type="text" id="mpf-sku" class="mp-input" value="' + esc(row ? row.sku : '') + '" ' + (isEdit ? 'readonly' : '') + '></label>' +
       '<label class="mp-flabel">السعر<input type="number" step="0.01" id="mpf-price" class="mp-input" value="' + (row ? row.price : '') + '"></label>' +
+      '<label class="mp-flabel">وحدة القياس<select id="mpf-unit" class="mp-select" style="width:100%">' + unitOptions + '</select></label>' +
       '<label class="mp-flabel">القسم<select id="mpf-dept" class="mp-select" style="width:100%">' + deptOptions + '</select></label>' +
       '<div class="mp-modal-actions">' +
       '<button class="mp-btn" id="mp-cancel">إلغاء</button>' +
@@ -157,6 +174,28 @@ var BARQ_MARKET_PRODUCTS = (function () {
     document.getElementById('mp-overlay').classList.add('open');
     document.getElementById('mp-cancel').addEventListener('click', closeModal);
     document.getElementById('mp-save').addEventListener('click', function () { saveProduct(row); });
+    var nameEl = document.getElementById('mpf-name');
+    if (prefillBarcode && !isEdit) nameEl.focus(); else document.getElementById('mpf-barcode').focus();
+  }
+
+  // سكان الباركود من شاشة القائمة مباشرة: لو الباركود ده موجود بالفعل
+  // بيفتح تعديل المنتج ده، ولو مش موجود بيفتح إضافة منتج جديد بالباركود
+  // متملي مسبقًا — بالظبط زي سلوك سكانر فوديكس/POS القياسي
+  function scanBarcode(code) {
+    sb('dc_products?barcode=eq.' + encodeURIComponent(code) + '&select=sku,name,barcode,price,unit,is_active&limit=1').then(function (found) {
+      if (found && found[0]) {
+        var row = found[0];
+        return sb('sku_departments?sku=eq.' + encodeURIComponent(row.sku) + '&select=department&limit=1').then(function (d) {
+          row.department = (d && d[0] && d[0].department) || null;
+          openProductModal(row);
+        });
+      }
+      showToast('🆕 باركود جديد — إضافة منتج');
+      openProductModal(null, code);
+    }).catch(function (e) {
+      console.error(e);
+      showToast('❌ حصل خطأ في البحث عن الباركود', 4000);
+    });
   }
 
   function closeModal() {
@@ -168,10 +207,11 @@ var BARQ_MARKET_PRODUCTS = (function () {
     var barcode = document.getElementById('mpf-barcode').value.trim();
     var sku = document.getElementById('mpf-sku').value.trim() || (existing ? existing.sku : ('local-' + Date.now()));
     var price = parseFloat(document.getElementById('mpf-price').value) || 0;
+    var unit = document.getElementById('mpf-unit').value || 'قطعة';
     var department = document.getElementById('mpf-dept').value || null;
     if (!name) { showToast('⚠️ لازم اسم الصنف'); return; }
 
-    var row = { sku: sku, name: name, barcode: barcode || null, price: price, is_active: true };
+    var row = { sku: sku, name: name, barcode: barcode || null, price: price, unit: unit, is_active: true };
     sb('dc_products', {
       method: 'POST',
       headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
