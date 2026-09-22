@@ -56,6 +56,11 @@
 .ord-mod .qty-input { border: none; background: transparent; width: 50px; height: 34px; text-align: center; font-family: 'Cairo',sans-serif; font-size: 14px; font-weight: 800; color: var(--text); outline: none; -moz-appearance: textfield; }
 .ord-mod .qty-input::-webkit-outer-spin-button, .ord-mod .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 .ord-mod .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1.5px solid var(--border); padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); display: flex; gap: 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 200; }
+@media (min-width: 861px) {
+  /* على الديسكتوب القائمة الجانبية ثابتة على يمين الشاشة، فالشريط ده لازم
+     يقف عند حافتها بدل ما يمتد تحتها ويتغطى فوقها */
+  .ord-mod .bottom-bar { right: var(--sidebar-w); }
+}
 .ord-mod .action-btn { flex: 1; border: none; border-radius: 12px; padding: 13px; font-family: 'Cairo',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .ord-mod .btn-primary { background: linear-gradient(135deg, var(--accent), var(--primary)); color: #fff; box-shadow: 0 4px 14px rgba(18, 199, 122,0.3); }
 .ord-mod .btn-excel { background: linear-gradient(135deg, #217346, #1a5c38); color: #fff; box-shadow: 0 4px 14px rgba(33,115,70,0.3); }
