@@ -187,6 +187,14 @@ var BARQ_AUTH = (function () {
     saveSession();
   }
 
+  // بعد ما اليوزر يعدّل اسمه الظاهر بنفسه (من قايمة المستخدم في التوب بار)
+  // بنحدّث نسخة الجلسة المحلية على طول من غير ما نحتاج تسجيل خروج/دخول
+  function updateOwnLabel(newLabel) {
+    if (!currentUser) return;
+    currentUser.label = newLabel || (ROLES[currentUser.role] ? ROLES[currentUser.role].label : currentUser.label);
+    saveSession();
+  }
+
   function can(action) {
     if (!currentUser) return false;
     var roleDef = ROLES[currentUser.role];
@@ -277,6 +285,7 @@ var BARQ_AUTH = (function () {
     listUsers: listUsers,
     addUser: addUser,
     updateUser: updateUser,
+    updateOwnLabel: updateOwnLabel,
     deleteUser: deleteUser,
     rolesList: rolesList
   };

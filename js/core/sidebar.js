@@ -184,8 +184,6 @@ var BarqApp = (function () {
       '<div class="app-shell" id="app-shell">' +
       '  <aside class="sidebar" id="sidebar">' +
       '    <div class="sidebar-header"><span class="logo"></span><span class="title">برق <span class="title-en">BARQ</span></span></div>' +
-      '    <div class="sidebar-user"><span class="avatar">' + user.icon + '</span><div class="info"><span class="name">' + (user.username || user.label) + '</span><span class="role">' + user.label + '</span></div></div>' +
-      '    <button class="sidebar-logout-top" id="btn-logout">تسجيل الخروج</button>' +
       '    <div class="sidebar-eyebrow">الأقسام</div>' +
       '    <nav class="sidebar-nav">' + sectionsHtml + '</nav>' +
       '  </aside>' +
@@ -193,7 +191,13 @@ var BarqApp = (function () {
       '    <div class="topbar">' +
       '      <button class="menu-toggle" id="btn-menu">☰ رجوع</button>' +
       '      <div class="section-title">' + (currentSectionDef ? currentSectionDef.icon + ' ' + currentSectionDef.label : '') + '</div>' +
-      '      <div></div>' +
+      '      <div class="topbar-user">' +
+      '        <button class="topbar-user-btn" id="btn-user-menu"><span class="avatar-sm">' + user.icon + '</span><span class="welcome">مرحبا ' + user.label + '</span><span class="caret">▾</span></button>' +
+      '        <div class="user-dropdown" id="user-dropdown">' +
+      '          <button id="btn-edit-self">✏️ تعديل بياناتي</button>' +
+      '          <button id="btn-logout">🚪 تسجيل الخروج</button>' +
+      '        </div>' +
+      '      </div>' +
       '    </div>' +
       '    <div class="content-area" id="content-area"></div>' +
       '  </div>' +
@@ -207,6 +211,19 @@ var BarqApp = (function () {
       '      <div class="report-modal-actions">' +
       '        <button class="report-btn report-btn-primary" id="btn-report-send">إرسال البلاغ</button>' +
       '        <button class="report-btn" id="btn-report-cancel">إلغاء</button>' +
+      '      </div>' +
+      '    </div>' +
+      '  </div>' +
+      '  <div class="report-modal-backdrop" id="self-edit-backdrop">' +
+      '    <div class="report-modal">' +
+      '      <h3>✏️ تعديل بياناتي</h3>' +
+      '      <p class="report-modal-sub">الاسم اللي هيظهرلك في الترحيب. تفاصيل الدور والصلاحيات بتتعدّل من "المستخدمين والصلاحيات".</p>' +
+      '      <label class="mp-flabel" style="display:block;font-size:12px;color:var(--muted);margin-bottom:12px">الاسم الظاهر<input type="text" id="self-edit-label" class="mp-input" style="width:100%;margin-top:5px;box-sizing:border-box" value="' + (user.label || '') + '"></label>' +
+      '      <label class="mp-flabel" style="display:block;font-size:12px;color:var(--muted);margin-bottom:12px">كلمة سر جديدة (سيبها فاضية لو مش عايز تغيّرها)<input type="password" id="self-edit-password" class="mp-input" style="width:100%;margin-top:5px;box-sizing:border-box"></label>' +
+      '      <div class="report-modal-err" id="self-edit-err"></div>' +
+      '      <div class="report-modal-actions">' +
+      '        <button class="report-btn report-btn-primary" id="btn-self-edit-save">💾 حفظ</button>' +
+      '        <button class="report-btn" id="btn-self-edit-cancel">إلغاء</button>' +
       '      </div>' +
       '    </div>' +
       '  </div>' +
@@ -246,7 +263,50 @@ var BarqApp = (function () {
     });
 
     bindReportFab();
+    bindUserMenu(user);
     mountActiveContent();
+  }
+
+  // ---------------- قايمة المستخدم (أعلى يسار الشاشة، برا القائمة الجانبية) ----------------
+  function bindUserMenu(user) {
+    var menuBtn = document.getElementById('btn-user-menu');
+    var dropdown = document.getElementById('user-dropdown');
+    if (!menuBtn || !dropdown) return;
+
+    menuBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', function () { dropdown.classList.remove('open'); });
+    dropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    var editBackdrop = document.getElementById('self-edit-backdrop');
+    document.getElementById('btn-edit-self').addEventListener('click', function () {
+      dropdown.classList.remove('open');
+      document.getElementById('self-edit-err').textContent = '';
+      document.getElementById('self-edit-label').value = user.label || '';
+      document.getElementById('self-edit-password').value = '';
+      editBackdrop.classList.add('open');
+    });
+    document.getElementById('btn-self-edit-cancel').addEventListener('click', function () { editBackdrop.classList.remove('open'); });
+    editBackdrop.addEventListener('click', function (e) { if (e.target === editBackdrop) editBackdrop.classList.remove('open'); });
+
+    document.getElementById('btn-self-edit-save').addEventListener('click', function () {
+      var newLabel = document.getElementById('self-edit-label').value.trim();
+      var newPassword = document.getElementById('self-edit-password').value.trim();
+      var errEl = document.getElementById('self-edit-err');
+      var saveBtn = document.getElementById('btn-self-edit-save');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'جاري الحفظ...';
+      BARQ_AUTH.updateUser(user.username, { label: newLabel, password: newPassword || undefined }).then(function (res) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 حفظ';
+        if (!res.ok) { errEl.textContent = res.error || 'تعذر الحفظ'; return; }
+        BARQ_AUTH.updateOwnLabel(newLabel);
+        editBackdrop.classList.remove('open');
+        render();
+      });
+    });
   }
 
   // ---------------- زرار البلاغ العائم ----------------
