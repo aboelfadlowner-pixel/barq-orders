@@ -15,15 +15,15 @@ var BARQ_AUTH = (function () {
 
   // ---------- سجل الأدوار (الصلاحيات وأقسام القائمة الجانبية بس، من غير أي بيانات دخول) ----------
   var ROLES = {
-    admin:    { label: 'مدير عام',   icon: '👑', method: 'password', can: ['order','history','dashboard','manage_users','admin_panel','admin_settings','data_entry','production','freezer','factory_receive'], sections: ['orders','purchasing','pricing','receiving','finance','barcode','stocktake','shelf-check','reports','decision-kitchen','market-products','access-list','support-admin'] },
-    manager:  { label: 'مدير فرع',   icon: '🏪', method: 'password', can: ['order','dashboard','production','freezer','factory_receive'], sections: ['orders','reports'] },
-    staff:    { label: 'موظف',       icon: '👤', method: 'password', can: ['data_entry','admin_panel','freezer','factory_receive'], sections: ['orders'] },
+    admin:    { label: 'مدير عام',   icon: '👑', method: 'password', can: ['order','history','dashboard','manage_users','admin_panel','admin_settings','data_entry','production','freezer','factory_receive'], sections: ['orders','inventory','purchasing','pricing','receiving','finance','barcode','stocktake','shelf-check','reports','decision-kitchen','market-products','access-list','support-admin'] },
+    manager:  { label: 'مدير فرع',   icon: '🏪', method: 'password', can: ['order','dashboard','production','freezer','factory_receive'], sections: ['orders','inventory','reports'] },
+    staff:    { label: 'موظف',       icon: '👤', method: 'password', can: ['data_entry','admin_panel','freezer','factory_receive'], sections: ['orders','inventory'] },
     receiving: { label: 'الاستلام',                    icon: '📦', method: 'pin', sections: ['receiving','stocktake','shelf-check'] },
     pricing:   { label: 'مسؤول التسعير',                icon: '💰', method: 'pin', sections: ['pricing'] },
     finance:   { label: 'أمين الخزينة',                 icon: '🏦', method: 'pin', sections: ['finance'] },
     finmgr:    { label: 'مدير المالية',                 icon: '📊', method: 'pin', sections: ['finance'] },
     purchmgr:  { label: 'مدير قسم المشتريات',            icon: '📦', method: 'pin', sections: ['purchasing'] },
-    ceo:       { label: 'رئيس مجلس الإدارة',             icon: '👔', method: 'pin', sections: ['orders','purchasing','pricing','receiving','finance','barcode','stocktake','shelf-check','reports','decision-kitchen','market-products','access-list','support-admin'] },
+    ceo:       { label: 'رئيس مجلس الإدارة',             icon: '👔', method: 'pin', sections: ['orders','inventory','purchasing','pricing','receiving','finance','barcode','stocktake','shelf-check','reports','decision-kitchen','market-products','access-list','support-admin'] },
     deptprep:  { label: 'تحضير الأقسام',                 icon: '🏭', method: 'pin', sections: ['dept-prep'] },
     // يوزرات مستقلة لكل وضع جوه "استلام وجرد" — كل واحد بيفتحله وضعه بس، من
     // غير شاشة اختيار ومن غير ما يشوف الأوضاع التانية خالص

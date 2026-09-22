@@ -3,9 +3,14 @@
 // ============================================================
 
 var BARQ_SECTIONS = [
-  { key: 'orders',      label: 'الطلبيات',              icon: '🛒',
+  { key: 'orders',      label: 'الطلبيات',              icon: '🛒' },
+  // كل اللي ليه علاقة بالمصنع (إنتاج/فريزر/استلام/تحضير أقسام) كان قبل
+  // كده تبويبات فرعية جوه "الطلبيات" — بقى قسم مستقل بذات نفسه هنا عشان
+  // يتفصل بصريًا عن شاشة الطلب اليومي. لسه بيستخدم نفس مفاتيح الموديولات
+  // القديمة (orders-production/orders-freezer/...) فمفيش أي تغيير في
+  // المنطق نفسه، بس تجميعة العرض في القائمة اتغيرت.
+  { key: 'inventory',   label: 'المخزون',               icon: '🏭',
     subsections: [
-      { key: 'orders-main',       label: 'الأصناف والطلبيات' },
       { key: 'orders-production', label: 'الإنتاج',              cap: 'production' },
       { key: 'orders-freezer',    label: 'الفريزر',               cap: 'freezer' },
       { key: 'orders-receive',    label: 'استلام من المصنع',       cap: 'factory_receive' },

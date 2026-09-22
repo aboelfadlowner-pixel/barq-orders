@@ -4117,6 +4117,7 @@ function mount(container, sectionKey) {
 })();
 
 window.BARQ_MODULES = window.BARQ_MODULES || {};
+window.BARQ_MODULES['orders'] = { mount: BARQ_ORD.mount };
 window.BARQ_MODULES['orders-main'] = { mount: BARQ_ORD.mount };
 window.BARQ_MODULES['orders-production'] = { mount: BARQ_ORD.mount };
 window.BARQ_MODULES['orders-freezer'] = { mount: BARQ_ORD.mount };
