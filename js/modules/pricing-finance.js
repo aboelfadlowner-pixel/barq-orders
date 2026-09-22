@@ -408,8 +408,8 @@ var PAYMENT_METHODS = [
 var ROLES = {
   receiving: { label:'الاستلام', pass:'1111', icon:'📦', color:'#d68910' },
   pricing:   { label:'مسؤول التسعير', pass:'2222', icon:'💰', color:'#1a5276' },
-  finance:   { label:'أمين الخزينة — أحمد صلاح', pass:'3333', icon:'🏦', color:'#6c3483' },
-  finmgr:    { label:'مدير المالية — عمر أبو الفضل', pass:'4444', icon:'📊', color:'#1a3a2a' },
+  finance:   { label:'أمين الخزينة', pass:'3333', icon:'🏦', color:'#6c3483' },
+  finmgr:    { label:'مدير المالية', pass:'4444', icon:'📊', color:'#1a3a2a' },
   purchmgr:  { label:'مدير قسم المشتريات', pass:'5555', icon:'📦', color:'#2c3e50' },
   ceo:       { label:'رئيس مجلس الإدارة', pass:'9999', icon:'👔', color:'#1a3a2a' }
 };
@@ -4415,8 +4415,8 @@ function syncFromShellAuth(sectionKey) {
     // بس مش من أدوار PIN المعروفة هنا — من غير المابّينج ده كان بيشوف شاشة
     // اختيار الدور الداخلية القديمة بدل المحتوى مباشرة. نربطه بالدور المناسب
     // لنفس القسم اللي فتحه فعلاً من القائمة الجانبية. "مالية" بقت تبويبين
-    // (خزينة أحمد صلاح / مدير المالية) — كل واحد بياخد دوره الصح بدل ما
-    // يتقفل دايمًا على مدير المالية بس.
+    // (خزينة / مدير المالية) — كل واحد بياخد دوره الصح بدل ما يتقفل دايمًا
+    // على مدير المالية بس.
     if (sectionKey === 'finance-treasury') newRole = 'finance';
     else if (sectionKey === 'finance-mgr' || sectionKey === 'finance') newRole = 'finmgr';
     else newRole = 'pricing';

@@ -629,17 +629,14 @@ function saveData() {
   try { localStorage.setItem('aef_order',JSON.stringify({data:orderData,meta:orderMeta})); } catch(e){}
 }
 function clearOrder() {
-  console.log('Clear clicked');
-  if(!confirm('مسح الطلبية الحالية؟')) {console.log('Cancel'); return;}
-  console.log('Clearing data...');
-  orderData={}; 
-  orderMeta={branch:'',date:''}; 
+  if(!confirm('مسح الطلبية الحالية؟')) return;
+  orderData={};
+  orderMeta={branch:'',date:''};
   activeDept=null;
   localStorage.removeItem('aef_order');
   try{document.getElementById('file-input').value='';}catch(e){}
   renderAll();
   showToast('✅ تم مسح الطلبية بنجاح');
-  console.log('Clear done');
 }
 
 // ===== FILE =====
