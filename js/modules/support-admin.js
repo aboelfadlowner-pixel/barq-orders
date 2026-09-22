@@ -12,6 +12,20 @@ var BARQ_SUPPORT = (function () {
   var loadError = '';
   var filter = 'open'; // open | done | all
 
+  function showToast(msg, ms) {
+    var t = document.getElementById('barq-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'barq-toast';
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e2235;color:white;padding:11px 22px;border-radius:22px;font-size:14px;z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none;font-family:Cairo,sans-serif;white-space:nowrap;max-width:90vw;text-align:center;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.style.opacity = '0'; }, ms || 3000);
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -104,7 +118,7 @@ var BARQ_SUPPORT = (function () {
         if (r) r.status = status;
         render();
       })
-      .catch(function (e) { alert('تعذر التحديث'); console.error(e); });
+      .catch(function (e) { showToast('❌ تعذر التحديث'); console.error(e); });
   }
 
   function remove(id) {
@@ -114,7 +128,7 @@ var BARQ_SUPPORT = (function () {
         reports = reports.filter(function (x) { return x.id !== id; });
         render();
       })
-      .catch(function (e) { alert('تعذر الحذف'); console.error(e); });
+      .catch(function (e) { showToast('❌ تعذر الحذف'); console.error(e); });
   }
 
   function mount(container) {

@@ -581,8 +581,8 @@ function renderAuth() {
       '<div class="ri">'+r.icon+'</div><div class="rn">'+r.label+'</div></div>';
   }).join('');
   return '<div class="auth-wrap"><div class="auth-card">' +
-    '<div class="auth-logo">⚡</div><div class="auth-title">برق تسعير v3</div>' +
-    '<div class="auth-sub">أبو الفضل — نسخة تجريبية</div>' +
+    '<div class="auth-logo">⚡</div><div class="auth-title">برق تسعير</div>' +
+    '<div class="auth-sub">أبو الفضل</div>' +
     '<div class="role-grid">'+btns+'</div>' +
     '<input type="password" id="ap" class="auth-inp" placeholder="••••" maxlength="4" oninput="if(this.value.length===4)doLogin()">' +
     '<button class="auth-btn" onclick="BARQ_TAS.doLogin()">دخول</button>' +

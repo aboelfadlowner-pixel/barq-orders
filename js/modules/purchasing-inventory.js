@@ -148,8 +148,8 @@ function importBackup(file) {
       if (d.history) { history.length=0; history.push(...d.history); await dbSet('history',history); renderHistory(); }
       renderSuppliers();
       if (processedData.length) processData();
-      alert('✅ تم الاستيراد بنجاح');
-    } catch(err) { alert('❌ خطأ: '+err.message); }
+      showToast('✅ تم الاستيراد بنجاح');
+    } catch(err) { showToast('❌ خطأ: '+err.message, 4000); }
   };
   reader.readAsText(file);
   document.getElementById('importFile').value='';
@@ -621,7 +621,7 @@ async function saveSettings() {
   });
   await dbSet('settings', { tierCut, tierMin });
   if (processedData.length) processData();
-  alert('✅ تم الحفظ وإعادة التصنيف');
+  showToast('✅ تم الحفظ وإعادة التصنيف');
 }
 
 // =================== HISTORY ===================
@@ -961,7 +961,7 @@ function supAddSku(sku) {
 
 function saveSupplier() {
   const name = document.getElementById('supName').value.trim();
-  if (!name) { alert('اكتب اسم المورد'); return; }
+  if (!name) { showToast('⚠️ اكتب اسم المورد'); return; }
   const phone = document.getElementById('supPhone').value.trim();
   const company = document.getElementById('supCompany').value.trim();
   const note = document.getElementById('supNote').value.trim();
@@ -1007,9 +1007,9 @@ function importSuppliersExcel(file) {
       });
       saveSuppliers();
       renderSuppliers();
-      alert(`✅ تم الاستيراد بنجاح\n✔️ مضاف: ${added} مورد\n⏭️ متجاهل (مكرر/فارغ): ${skipped}`);
+      showToast(`✅ تم الاستيراد — مضاف: ${added} مورد، متجاهل (مكرر/فارغ): ${skipped}`, 4000);
     } catch(err) {
-      alert('❌ خطأ في قراءة الملف: ' + err.message);
+      showToast('❌ خطأ في قراءة الملف: ' + err.message, 4000);
     }
   };
   reader.readAsArrayBuffer(file);

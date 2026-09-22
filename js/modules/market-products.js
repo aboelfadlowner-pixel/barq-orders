@@ -14,6 +14,20 @@ var BARQ_MARKET_PRODUCTS = (function () {
   var loading = false;
   var PAGE_SIZE = 100;
 
+  function showToast(msg, ms) {
+    var t = document.getElementById('barq-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'barq-toast';
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e2235;color:white;padding:11px 22px;border-radius:22px;font-size:14px;z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none;font-family:Cairo,sans-serif;white-space:nowrap;max-width:90vw;text-align:center;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.style.opacity = '0'; }, ms || 3000);
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -120,7 +134,7 @@ var BARQ_MARKET_PRODUCTS = (function () {
       method: 'PATCH',
       body: JSON.stringify({ is_active: newVal })
     }).then(function () { loadProducts(); }).catch(function (e) {
-      console.error(e); alert('حصل خطأ، حاول تاني');
+      console.error(e); showToast('❌ حصل خطأ، حاول تاني');
     });
   }
 
@@ -155,7 +169,7 @@ var BARQ_MARKET_PRODUCTS = (function () {
     var sku = document.getElementById('mpf-sku').value.trim() || (existing ? existing.sku : ('local-' + Date.now()));
     var price = parseFloat(document.getElementById('mpf-price').value) || 0;
     var department = document.getElementById('mpf-dept').value || null;
-    if (!name) { alert('لازم اسم الصنف'); return; }
+    if (!name) { showToast('⚠️ لازم اسم الصنف'); return; }
 
     var row = { sku: sku, name: name, barcode: barcode || null, price: price, is_active: true };
     sb('dc_products', {
@@ -178,7 +192,7 @@ var BARQ_MARKET_PRODUCTS = (function () {
       loadProducts();
     }).catch(function (e) {
       console.error(e);
-      alert('حصل خطأ وإحنا بنحفظ — اتأكد من الاتصال وحاول تاني');
+      showToast('❌ حصل خطأ وإحنا بنحفظ — اتأكد من الاتصال وحاول تاني', 4000);
     });
   }
 

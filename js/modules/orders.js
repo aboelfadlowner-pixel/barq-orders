@@ -79,7 +79,7 @@ window.showBarqErrors = function() {
   html += '</div>';
   
   html += '<div style="margin-top:15px;display:flex;gap:10px">';
-  html += '<button onclick="navigator.clipboard.writeText(JSON.stringify({errors:window._barqErrors,logs:window._barqLog},null,2));alert(\'تم النسخ!\')" style="background:#1a3a2a;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Cairo">📋 نسخ كل البيانات</button>';
+  html += '<button onclick="navigator.clipboard.writeText(JSON.stringify({errors:window._barqErrors,logs:window._barqLog},null,2));this.textContent=\'✅ اتنسخ\';setTimeout(()=>this.textContent=\'📋 نسخ كل البيانات\',1500)" style="background:#1a3a2a;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Cairo">📋 نسخ كل البيانات</button>';
   html += '<button onclick="window._barqErrors=[];window._barqLog=[];document.getElementById(\'barqErrorPanel\').remove()" style="background:#e94560;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Cairo">🗑 مسح</button>';
   html += '<button onclick="document.getElementById(\'barqErrorPanel\').remove()" style="background:#666;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Cairo">✕ إغلاق</button>';
   html += '</div></div>';
