@@ -243,11 +243,11 @@ var BARQ_MARKET_PRODUCTS = (function () {
   function mount(container) {
     search = ''; deptFilter = ''; rows = [];
     container.innerHTML = '<div class="mp-mod"><div id="mp-root"></div></div>';
-    loadDepartments().then(loadProducts);
+    return loadDepartments().then(loadProducts);
   }
 
-  return { mount: mount };
+  return { mount: mount, openScan: scanBarcode };
 })();
 
 window.BARQ_MODULES = window.BARQ_MODULES || {};
-window.BARQ_MODULES['market-products'] = { mount: BARQ_MARKET_PRODUCTS.mount };
+window.BARQ_MODULES['market-products'] = { mount: BARQ_MARKET_PRODUCTS.mount, openScan: BARQ_MARKET_PRODUCTS.openScan };

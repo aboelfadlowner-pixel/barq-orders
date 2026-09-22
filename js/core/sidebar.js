@@ -55,6 +55,18 @@ var BarqApp = (function () {
   var activeSection = null;
   var activeSub = null;
 
+  // دخول مباشر من رابط خارجي (زي سكانر شاشة الكاشير touch-print-market.html
+  // لما يلاقي باركود مش موجود) — بيفتح القسم المطلوب وبيشغّل الإضافة
+  // بالباركود تلقائي أول ما القسم يخلص تحميل. بيتشال أول ما يتستخدم عشان
+  // رفرش الصفحة بعد كده ميعيدش نفس الفتح.
+  var deepLinkParams = (function () {
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('openAdd') === '1' && p.get('section')) {
+      return { section: p.get('section'), barcode: p.get('barcode') || '' };
+    }
+    return null;
+  })();
+
   function root() { return document.getElementById('barq-root'); }
 
   function render() {
@@ -140,7 +152,7 @@ var BarqApp = (function () {
   function renderShell(user) {
     var allowed = BARQ_AUTH.allowedSections();
     if (!activeSection || allowed.indexOf(activeSection) === -1) {
-      activeSection = allowed[0] || null;
+      activeSection = (deepLinkParams && allowed.indexOf(deepLinkParams.section) !== -1) ? deepLinkParams.section : (allowed[0] || null);
       var initDef = BARQ_SECTIONS.find(function (s) { return s.key === activeSection; });
       activeSub = (initDef && initDef.subsections && initDef.subsections[0]) ? initDef.subsections[0].key : null;
     }
@@ -307,7 +319,16 @@ var BarqApp = (function () {
     var key = activeSub || activeSection;
     var mod = BARQ_MODULES[key];
     if (mod && typeof mod.mount === 'function') {
-      mod.mount(container, key);
+      var mountResult = mod.mount(container, key);
+      if (deepLinkParams && activeSection === deepLinkParams.section && typeof mod.openScan === 'function') {
+        var barcode = deepLinkParams.barcode;
+        deepLinkParams = null;
+        // نمسح البارامترز من الرابط عشان أي رفرش بعد كده ميعيدش فتح نفس الإضافة
+        window.history.replaceState({}, '', window.location.pathname);
+        (mountResult && typeof mountResult.then === 'function' ? mountResult : Promise.resolve()).then(function () {
+          mod.openScan(barcode);
+        });
+      }
       return;
     }
     var def = BARQ_SECTIONS.find(function (s) { return s.key === activeSection; });
