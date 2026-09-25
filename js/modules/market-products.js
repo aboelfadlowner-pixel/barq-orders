@@ -74,7 +74,8 @@ var BARQ_MARKET_PRODUCTS = (function () {
     if (!root) return;
     var deptOptions = '<option value="">كل الأقسام</option>' + departments.map(function (d) { return '<option value="' + esc(d) + '"' + (d === deptFilter ? ' selected' : '') + '>' + esc(d) + '</option>'; }).join('');
     root.innerHTML =
-      '<div class="mp-header"><h2>🏪 إدارة منتجات الكاشير</h2><p class="mp-sub">المصدر المركزي لكتالوج شاشة البيع — أي تعديل هنا بيظهر تلقائي في كل شاشات الكاشير.</p></div>' +
+      '<div class="mp-header"><h2>🏪 المنتجات</h2><p class="mp-sub">المصدر المركزي لكتالوج شاشة البيع — أي تعديل هنا بيظهر تلقائي في كل شاشات الكاشير.</p>' +
+      '<a class="mp-btn" id="mp-open-pos" href="../touch-print-market.html" target="_blank" rel="noopener">🖨 فتح شاشة الكاشير (POS)</a></div>' +
       '<div class="mp-filters">' +
       '<input class="mp-input mp-scan-input" id="mp-scan" placeholder="📷 امسح الباركود... (يفتح تعديل لو موجود، إضافة لو جديد)">' +
       '<input class="mp-input" id="mp-search" placeholder="🔍 دور بالاسم..." value="' + esc(search) + '">' +

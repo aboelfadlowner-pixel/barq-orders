@@ -4,20 +4,23 @@
 
 var BARQ_SECTIONS = [
   { key: 'orders',      label: 'الطلبيات',              icon: '🛒' },
-  // كل اللي ليه علاقة بالمصنع (إنتاج/فريزر/استلام/تحضير أقسام) كان قبل
-  // كده تبويبات فرعية جوه "الطلبيات" — بقى قسم مستقل بذات نفسه هنا عشان
-  // يتفصل بصريًا عن شاشة الطلب اليومي. لسه بيستخدم نفس مفاتيح الموديولات
-  // القديمة (orders-production/orders-freezer/...) فمفيش أي تغيير في
-  // المنطق نفسه، بس تجميعة العرض في القائمة اتغيرت.
+  // الفريزر و"استلام من المصنع" اتشالوا من هنا — شغالين بالفعل في أداة
+  // تانية برا برق، مفيش داعي يتكرروا هنا. "المصنع" و"الإنتاج"/"تحضير
+  // الأقسام" (بقت "الإنتاج والتصنيع") هما اللي فضلوا.
   { key: 'inventory',   label: 'المخزون',               icon: '🏭',
     subsections: [
-      { key: 'orders-production', label: 'الإنتاج',              cap: 'production' },
-      { key: 'orders-freezer',    label: 'الفريزر',               cap: 'freezer' },
-      { key: 'orders-receive',    label: 'استلام من المصنع',       cap: 'factory_receive' },
-      { key: 'orders-factory',    label: 'المصنع' },
-      { key: 'orders-dept',       label: 'تحضير الأقسام' }
+      // "الإنتاج والتصنيع" — بند واحد جامع، تابات جواه لكل قسم تحضير
+      // (زي تابات تطبيق الفروع بالظبط). يوزر عام (admin/ceo/manager)
+      // بيشوف كل التابات؛ يوزر قسم معيّن (deptprep_vip مثلاً) بيشوف
+      // بس تابه هو بفضل roleOnly — تمامًا زي خزينة/مدير المالية تحت.
+      { key: 'orders-production', label: 'الإنتاج والتصنيع' },
+      { key: 'dept-vip',          label: 'تحضير — VIP',                roleOnly: 'deptprep_vip' },
+      { key: 'dept-masnaat',      label: 'تحضير — مصنعات',             roleOnly: 'deptprep_masnaat' },
+      { key: 'dept-lahom',        label: 'تحضير — مصنعات لحوم ودواجن', roleOnly: 'deptprep_lahom' },
+      { key: 'dept-mo3mal',       label: 'تحضير — معمل',               roleOnly: 'deptprep_mo3mal' },
+      { key: 'orders-factory',    label: 'المصنع' }
     ] },
-  { key: 'purchasing',  label: 'المشتريات والمخزون',   icon: '📦' },
+  { key: 'purchasing',  label: 'لوحة تحكم المشتريات',   icon: '📦' },
   { key: 'pricing',     label: 'تسعير',                  icon: '💰' },
   { key: 'receiving',   label: 'استلامات',               icon: '📥' },
   // "مالية" كانت دايمًا بتوريك شاشة "مدير المالية" بس لما تدخل بحساب admin،
@@ -30,20 +33,26 @@ var BARQ_SECTIONS = [
       { key: 'finance-treasury', label: 'خزينة (أمين الخزينة)', roleOnly: 'finance' },
       { key: 'finance-mgr',      label: 'مدير المالية',       roleOnly: 'finmgr' }
     ] },
-  { key: 'barcode',     label: 'باركود وطباعة',          icon: '🏷️' },
   { key: 'stocktake',   label: 'جرد',                    icon: '🔢' },
-  { key: 'shelf-check', label: 'شيلفات',                 icon: '🔖' },
-  // نفس موديول "تحضير الأقسام" (تبويب فرعي جوه الطلبيات) بس كقسم مستقل —
-  // ده اللي بيظهر لليوزر المخصص deptprep (كل الأقسام)، اللي مالوش صلاحية
-  // على "الطلبيات" نفسها. وتحته 4 يوزرات مخصصة، كل واحد لقسم واحد بس
-  { key: 'dept-prep',   label: 'تحضير الأقسام',          icon: '🏭' },
-  { key: 'dept-vip',      label: 'تحضير — VIP',              icon: '🏭' },
-  { key: 'dept-masnaat',  label: 'تحضير — مصنعات',           icon: '🏭' },
-  { key: 'dept-lahom',    label: 'تحضير — مصنعات لحوم ودواجن', icon: '🏭' },
-  { key: 'dept-mo3mal',   label: 'تحضير — معمل',              icon: '🏭' },
+  // "تسويق": باركود وطباعة + شيلفات بقوا تبويبين جوه قسم واحد — يوزر
+  // "تسويق" المخصص بيشوف الاتنين بس ومفيش حاجة تانية، وباقي الأدوار
+  // (admin/ceo/receiving/shelfcheck) بتشوف اللي كانت شايفاه بالظبط زي
+  // الأول من غير ما نكرر القسم في مكانين
+  { key: 'marketing',   label: 'تسويق',                  icon: '📣',
+    subsections: [
+      { key: 'barcode',    label: 'باركود وطباعة', roles: ['admin', 'ceo', 'marketing'] },
+      { key: 'shelf-check', label: 'شيلفات',        roles: ['admin', 'ceo', 'marketing', 'receiving', 'shelfcheck'] }
+    ] },
   { key: 'reports', label: 'تقارير', icon: '📊' },
   { key: 'decision-kitchen', label: 'مطبخ القرار', icon: '🍳' },
-  { key: 'market-products', label: 'إدارة منتجات الكاشير', icon: '🏪' },
+  { key: 'market-products', label: 'المنتجات', icon: '🏪' },
+  // قسم جديد: روابط مباشرة لأدوات مستقلة برا برق (بتفتح في تاب جديد،
+  // مفيهاش أي منطق/موديول جوه برق نفسه)
+  { key: 'addons', label: 'الملحقات', icon: '🧩',
+    subsections: [
+      { key: 'addon-pos', label: '🖨 نقطة البيع (POS)', url: '../touch-print-market.html' },
+      { key: 'addon-pda', label: '📋 استلام وجرد PDA',  url: '../istilam-w-gerd.html' }
+    ] },
   { key: 'access-list', label: 'المستخدمين والصلاحيات', icon: '👥' },
   { key: 'support-admin', label: 'بلاغات المستخدمين', icon: '🆘' }
 ];
@@ -131,19 +140,22 @@ var BarqApp = (function () {
   };
   function visibleSubsections(section, user) {
     if (!section.subsections) return null;
+    // لو اليوزر ده صاحب تبويب مخصص (roleOnly) جوه القسم ده — لازم يشوف
+    // تبويبه بس ومفيش حاجة تانية خالص، حتى لو فيه تبويبات تانية جوه نفس
+    // القسم من غير roleOnly أصلاً (زي "الإنتاج والتصنيع"/"المصنع" جوه
+    // المخزون — دول لازم يتخفوا عن يوزر deptprep_vip مثلاً، مش يظهروا
+    // بالغلط لأنهم من غير قيد أصلاً)
+    var ownerRoles = section.subsections.filter(function (s) { return s.roleOnly; }).map(function (s) { return s.roleOnly; });
+    var isDedicatedOwner = ownerRoles.indexOf(user.role) !== -1;
     return section.subsections.filter(function (sub) {
+      if (isDedicatedOwner) return sub.roleOnly === user.role;
       if (sub.cap) {
         var allowedCaps = ORDERS_ROLE_CAN[user.role];
         if (!(allowedCaps ? allowedCaps.indexOf(sub.cap) !== -1 : true)) return false;
       }
-      // roleOnly: تبويب خاص بيوزر PIN مخصص واحد بس (زي finance/finmgr) —
-      // يظهر لصاحبه فقط، أو لأي حد تاني عنده وصول عام على القسم (admin/ceo)
-      // اللي مش من أصحاب اليوزرات المخصصة دي أصلًا
-      if (sub.roleOnly) {
-        var ownerRoles = section.subsections.filter(function (s) { return s.roleOnly; }).map(function (s) { return s.roleOnly; });
-        var isDedicatedOwner = ownerRoles.indexOf(user.role) !== -1;
-        if (isDedicatedOwner) return sub.roleOnly === user.role;
-      }
+      // roles: لستة أدوار مسموح لها بس (لما أكتر من دور محتاج يشوف نفس
+      // التبويب — زي باركود اللي محتاج يظهر لـ admin/ceo/تسويق مع بعض)
+      if (sub.roles) return sub.roles.indexOf(user.role) !== -1;
       return true;
     });
   }
@@ -154,7 +166,12 @@ var BarqApp = (function () {
     if (!activeSection || allowed.indexOf(activeSection) === -1) {
       activeSection = (deepLinkParams && allowed.indexOf(deepLinkParams.section) !== -1) ? deepLinkParams.section : (allowed[0] || null);
       var initDef = BARQ_SECTIONS.find(function (s) { return s.key === activeSection; });
-      activeSub = (initDef && initDef.subsections && initDef.subsections[0]) ? initDef.subsections[0].key : null;
+      // لازم نختار أول تبويب فرعي *ظاهر فعلاً لليوزر ده* (مش أول عنصر خام
+      // في المصفوفة) — وإلا يوزر قسم معيّن (زي deptprep_vip) ممكن يفتح
+      // افتراضيًا على تبويب مش بتاعه أصلًا (زي "الإنتاج والتصنيع" العام)
+      var initSubs = initDef ? visibleSubsections(initDef, user) : null;
+      var firstVisibleSub = initSubs && initSubs.filter(function (s) { return !s.url; })[0];
+      activeSub = firstVisibleSub ? firstVisibleSub.key : null;
     }
 
     var visibleSections = BARQ_SECTIONS.filter(function (s) {
@@ -168,6 +185,9 @@ var BarqApp = (function () {
       var subHtml = '';
       if (hasSub) {
         subHtml = '<div class="sidebar-subnav">' + subs.map(function (sub) {
+          if (sub.url) {
+            return '<a class="sidebar-subitem sidebar-subitem-link" href="' + sub.url + '" target="_blank" rel="noopener">' + sub.label + ' ↗</a>';
+          }
           return '<div class="sidebar-subitem ' + (isActive && activeSub === sub.key ? 'active' : '') + '" data-section="' + s.key + '" data-sub="' + sub.key + '">' + sub.label + '</div>';
         }).join('') + '</div>';
       }
@@ -247,12 +267,14 @@ var BarqApp = (function () {
         if (e.target.closest('.sidebar-subitem')) return;
         activeSection = el.getAttribute('data-section');
         var secDef = BARQ_SECTIONS.find(function (s) { return s.key === activeSection; });
-        activeSub = (secDef && secDef.subsections && secDef.subsections[0]) ? secDef.subsections[0].key : null;
+        var secSubs = secDef ? visibleSubsections(secDef, user) : null;
+        var firstVisibleSecSub = secSubs && secSubs.filter(function (s) { return !s.url; })[0];
+        activeSub = firstVisibleSecSub ? firstVisibleSecSub.key : null;
         render();
         mountActiveContent();
       });
     });
-    root().querySelectorAll('.sidebar-subitem').forEach(function (el) {
+    root().querySelectorAll('.sidebar-subitem:not(.sidebar-subitem-link)').forEach(function (el) {
       el.addEventListener('click', function (e) {
         e.stopPropagation();
         activeSection = el.getAttribute('data-section');
@@ -260,6 +282,11 @@ var BarqApp = (function () {
         render();
         mountActiveContent();
       });
+    });
+    // روابط الملحقات (POS/PDA) بتاعت <a target="_blank"> — بتفتح لوحدها
+    // طبيعي، بس لازم توقف الكليك من إنه يطلع لفوق ويقفل/يبدّل القسم المفتوح
+    root().querySelectorAll('.sidebar-subitem-link').forEach(function (el) {
+      el.addEventListener('click', function (e) { e.stopPropagation(); });
     });
 
     bindReportFab();
@@ -392,7 +419,10 @@ var BarqApp = (function () {
       return;
     }
     var def = BARQ_SECTIONS.find(function (s) { return s.key === activeSection; });
-    container.innerHTML = '<div class="placeholder-card"><div class="pic">' + (def ? def.icon : '⚡') + '</div><h3>' + (def ? def.label : '') + '</h3><p>هذا القسم قيد النقل من التطبيق القديم — قريبًا.</p></div>';
+    var msg = (def && def.subsections && def.subsections.every(function (s) { return s.url; }))
+      ? 'دوس على أي رابط من القايمة الفرعية هنا عشان يفتحلك في تاب جديد.'
+      : 'هذا القسم قيد النقل من التطبيق القديم — قريبًا.';
+    container.innerHTML = '<div class="placeholder-card"><div class="pic">' + (def ? def.icon : '⚡') + '</div><h3>' + (def ? def.label : '') + '</h3><p>' + msg + '</p></div>';
   }
 
   return { render: render };

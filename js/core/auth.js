@@ -15,26 +15,29 @@ var BARQ_AUTH = (function () {
 
   // ---------- سجل الأدوار (الصلاحيات وأقسام القائمة الجانبية بس، من غير أي بيانات دخول) ----------
   var ROLES = {
-    admin:    { label: 'مدير عام',   icon: '👑', method: 'password', can: ['order','history','dashboard','manage_users','admin_panel','admin_settings','data_entry','production','freezer','factory_receive'], sections: ['orders','inventory','purchasing','pricing','receiving','finance','barcode','stocktake','shelf-check','reports','decision-kitchen','market-products','access-list','support-admin'] },
-    manager:  { label: 'مدير فرع',   icon: '🏪', method: 'password', can: ['order','dashboard','production','freezer','factory_receive'], sections: ['orders','inventory','reports'] },
+    admin:    { label: 'مدير عام',   icon: '👑', method: 'password', can: ['order','history','dashboard','manage_users','admin_panel','admin_settings','data_entry','production','freezer','factory_receive'], sections: ['orders','inventory','purchasing','pricing','receiving','finance','stocktake','marketing','reports','decision-kitchen','market-products','addons','access-list','support-admin'] },
+    manager:  { label: 'مدير فرع',   icon: '🏪', method: 'password', can: ['order','dashboard','production','freezer','factory_receive'], sections: ['orders','inventory'] },
     staff:    { label: 'موظف',       icon: '👤', method: 'password', can: ['data_entry','admin_panel','freezer','factory_receive'], sections: ['orders','inventory'] },
-    receiving: { label: 'الاستلام',                    icon: '📦', method: 'pin', sections: ['receiving','stocktake','shelf-check'] },
+    receiving: { label: 'الاستلام',                    icon: '📦', method: 'pin', sections: ['receiving','stocktake','marketing'] },
     pricing:   { label: 'مسؤول التسعير',                icon: '💰', method: 'pin', sections: ['pricing'] },
     finance:   { label: 'أمين الخزينة',                 icon: '🏦', method: 'pin', sections: ['finance'] },
     finmgr:    { label: 'مدير المالية',                 icon: '📊', method: 'pin', sections: ['finance'] },
     purchmgr:  { label: 'مدير قسم المشتريات',            icon: '📦', method: 'pin', sections: ['purchasing'] },
-    ceo:       { label: 'رئيس مجلس الإدارة',             icon: '👔', method: 'pin', sections: ['orders','inventory','purchasing','pricing','receiving','finance','barcode','stocktake','shelf-check','reports','decision-kitchen','market-products','access-list','support-admin'] },
-    deptprep:  { label: 'تحضير الأقسام',                 icon: '🏭', method: 'pin', sections: ['dept-prep'] },
+    ceo:       { label: 'رئيس مجلس الإدارة',             icon: '👔', method: 'pin', sections: ['orders','inventory','purchasing','pricing','receiving','finance','stocktake','marketing','reports','decision-kitchen','market-products','addons','access-list','support-admin'] },
     // يوزرات مستقلة لكل وضع جوه "استلام وجرد" — كل واحد بيفتحله وضعه بس، من
     // غير شاشة اختيار ومن غير ما يشوف الأوضاع التانية خالص
     stockcount: { label: 'الجرد',                        icon: '🔢', method: 'pin', sections: ['stocktake'] },
-    shelfcheck: { label: 'شيلفات',                        icon: '🔖', method: 'pin', sections: ['shelf-check'] },
+    shelfcheck: { label: 'شيلفات',                        icon: '🔖', method: 'pin', sections: ['marketing'] },
+    // يوزر "تسويق" مخصص — بيشوف بس باركود وطباعة + شيلفات (جوه قسم تسويق)
+    // ومفيش حاجة تانية خالص
+    marketing: { label: 'تسويق',                          icon: '📣', method: 'pin', sections: ['marketing'] },
     // يوزرات مستقلة لكل قسم من أقسام "تحضير الأقسام" — كل واحد بيدخل بيوزره
-    // ويوصله على طول لقسمه بس، من غير شاشة اختيار القسم/الباسورد الداخلية
-    deptprep_vip:     { label: 'تحضير — VIP',              icon: '🏭', method: 'pin', sections: ['dept-vip'] },
-    deptprep_masnaat: { label: 'تحضير — مصنعات',           icon: '🏭', method: 'pin', sections: ['dept-masnaat'] },
-    deptprep_lahom:   { label: 'تحضير — مصنعات لحوم ودواجن', icon: '🏭', method: 'pin', sections: ['dept-lahom'] },
-    deptprep_mo3mal:  { label: 'تحضير — معمل',              icon: '🏭', method: 'pin', sections: ['dept-mo3mal'] }
+    // ويوصله على طول لتبويبه بس جوه "المخزون → الإنتاج والتصنيع"، من غير
+    // شاشة اختيار القسم/الباسورد الداخلية، وبدون ما يشوف باقي الأقسام
+    deptprep_vip:     { label: 'تحضير — VIP',              icon: '🏭', method: 'pin', sections: ['inventory'] },
+    deptprep_masnaat: { label: 'تحضير — مصنعات',           icon: '🏭', method: 'pin', sections: ['inventory'] },
+    deptprep_lahom:   { label: 'تحضير — مصنعات لحوم ودواجن', icon: '🏭', method: 'pin', sections: ['inventory'] },
+    deptprep_mo3mal:  { label: 'تحضير — معمل',              icon: '🏭', method: 'pin', sections: ['inventory'] }
   };
 
   var SESSION_KEY = 'barq_unified_session';

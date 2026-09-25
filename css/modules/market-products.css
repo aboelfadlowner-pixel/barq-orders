@@ -17,9 +17,10 @@
 .mp-scan-input::placeholder { color: var(--accent); opacity: .8; }
 
 .mp-btn {
-  padding: 9px 16px; border-radius: 9px; border: 1.5px solid var(--border); background: #fff;
-  color: var(--text); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+  display: inline-block; padding: 9px 16px; border-radius: 9px; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none;
 }
+#mp-open-pos { margin-top: 8px; }
 .mp-btn:hover { border-color: var(--accent); }
 .mp-btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .mp-btn-primary:hover { background: var(--primary); border-color: var(--primary); }

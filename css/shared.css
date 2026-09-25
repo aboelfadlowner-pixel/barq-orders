@@ -195,6 +195,7 @@ html, body {
 }
 .sidebar-subitem:hover { background: var(--accent-soft); color: var(--primary); }
 .sidebar-subitem.active { background: var(--accent-soft); color: var(--primary); font-weight: 700; }
+.sidebar-subitem-link { display: block; text-decoration: none; }
 
 .sidebar-footer { padding: 12px; border-top: 1px solid var(--border); margin: 4px 4px 0; }
 .sidebar-logout {
